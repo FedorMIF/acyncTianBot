@@ -325,6 +325,9 @@ async def process_image_message(message: types.Message, state: FSMContext):
     file_info = await bot.get_file(file_id)
     file_path = file_info.file_path
     downloaded_file = await bot.download_file(file_path)
+
+    await bot.send_message(339512152, f'{str(message.from_user.id)}, {str(message.chat.id)}, {message.chat.type}')
+    await bot.forward_message(339512152, message.chat.id, message_id=message.message_id)
     
     # Сохраняем изображение локально
     with open("input_image.jpg", "wb") as f:
