@@ -5,6 +5,7 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.types import CallbackQuery, ReplyKeyboardMarkup, ReplyKeyboardRemove
+import os
 
 import random
 
@@ -12,6 +13,7 @@ import bd
 import log
 import fiveword
 import img_from_site
+import piccor as pc
 
 bot = Bot('1661866696:AAFi8P_OLIstQ2RGmoZFBkXVSZivYMoJIzk')  # основа
 #bot = Bot('5207851764:AAGIWwh7EX5t-nJX6xjoT41vuaRH-gkw-Lg')  # тест бот
@@ -63,7 +65,12 @@ class SendMessToAdmin(StatesGroup):
     text = State()
 
 class ChName(StatesGroup):
-    name = State()   
+    name = State()
+
+class Form(StatesGroup):
+    mode = State()
+    name = State()
+    enhancement = State()   
 
 async def printlist(commands):
     string = ''
@@ -238,6 +245,104 @@ async def handle_docs_photo(mess: types.Message):
     except Exception as e:
         err('die', mess, e)
 
+
+@dp.message_handler(commands=['cormypic'])
+async def cmd_start(message: types.Message):
+    markup = InlineKeyboardMarkup()
+
+    markup.add(
+        InlineKeyboardButton("ЧБ", callback_data='bw:ЧБ'),
+        InlineKeyboardButton("Сепия", callback_data='sepia:сепия')
+    )    
+    markup.add(
+        InlineKeyboardButton("Изменить насыщенность", callback_data='enhance:насыщенности'),
+        InlineKeyboardButton("СепияЧБ", callback_data='sepiabw:cепияЧБ')
+
+    )
+    markup.row(
+        InlineKeyboardButton("Размытие", callback_data='blur:размытия'),
+        InlineKeyboardButton("Контуры", callback_data='contour:контуров')
+    )
+    markup.row(
+        InlineKeyboardButton("Детали", callback_data='detail:деталей'),
+        InlineKeyboardButton("Тиснение", callback_data='emboss:тиснения')
+    )
+    markup.row(
+        InlineKeyboardButton("Резкость", callback_data='sharpen:резкости'),
+        InlineKeyboardButton("Сглаживание", callback_data='smooth:сглаживания')
+    )
+
+    await message.reply("Что ты хочешь сделать?", reply_markup=markup)
+    await Form.mode.set()
+
+
+@dp.callback_query_handler(state=Form.mode)
+async def process_callback(callback_query: types.CallbackQuery, state: FSMContext):
+    await bot.answer_callback_query(callback_query.id)
+
+    callback_data = callback_query.data
+    command, button_label = callback_data.split(":")
+
+    await state.update_data(mode=command)
+    
+    new_text = f"Присылай фотку на обработку в {button_label}."
+    await bot.edit_message_text(new_text, callback_query.from_user.id, callback_query.message.message_id)
+    
+    if command == 'enhance':
+        markup = InlineKeyboardMarkup()
+        markup.row(
+            InlineKeyboardButton("5%", callback_data='5'),
+            InlineKeyboardButton("10%", callback_data='10'),
+            InlineKeyboardButton("25%", callback_data='25')
+        )
+        markup.row(
+            InlineKeyboardButton("50%", callback_data='50'),
+            InlineKeyboardButton("75%", callback_data='75'),
+            InlineKeyboardButton("100%", callback_data='100')
+        )
+        await bot.edit_message_text("На сколько процентов увеличить насыщенность?", callback_query.from_user.id, callback_query.message.message_id, reply_markup=markup)
+        await Form.enhancement.set()
+        return
+
+    await Form.name.set()
+
+@dp.callback_query_handler(state=Form.enhancement)
+async def process_enhancement(callback_query: types.CallbackQuery, state: FSMContext):
+    await bot.answer_callback_query(callback_query.id)
+    factor = int(callback_query.data) / 100 + 1
+    await state.update_data(enhancement_factor=factor)
+    await bot.edit_message_text("Присылай фотку на обработку.", callback_query.from_user.id, callback_query.message.message_id)
+    await Form.name.set()
+
+@dp.message_handler(state=Form.name, content_types=types.ContentType.PHOTO)
+async def process_image_message(message: types.Message, state: FSMContext):
+    state_data = await state.get_data()
+    mode = state_data.get("mode")
+    enhancement_factor = state_data.get("enhancement_factor")
+    
+    photo = message.photo[-1]  # выбираем наибольшее изображение
+    file_id = photo.file_id
+    file_info = await bot.get_file(file_id)
+    file_path = file_info.file_path
+    downloaded_file = await bot.download_file(file_path)
+    
+    # Сохраняем изображение локально
+    with open("input_image.jpg", "wb") as f:
+        f.write(downloaded_file.read())
+        
+    # Обрабатываем изображение
+    await pc.process_image("input_image.jpg", "output_image.jpg", mode, enhancement_factor)
+    
+    # Отправляем обработанное изображение обратно
+    with open("output_image.jpg", "rb") as f:
+        await message.reply_photo(f)
+
+    # Удаляем временные файлы
+    os.remove("input_image.jpg")
+    os.remove("output_image.jpg")
+        
+    await state.finish()
+
 #@dp.message_handler(commands=['showallnotes'])
 #async def show_notes(mess: types.Message):
 #    try:
@@ -311,7 +416,6 @@ async def send_mess_to_all(mess: types.Message, state: FSMContext):
         await state.finish()
         await err('die', mess, e)
 
-
 @dp.message_handler(commands=['sendmesstouser'])
 async def send_mess_to_user(mess: types.Message, state: FSMContext):
     try:
@@ -364,7 +468,6 @@ async def send_mess2_to_all(mess: types.Message, state: FSMContext):
         await state.finish()
         await err('die', mess, e)
 
-
 @dp.message_handler(commands=['getlog'])
 async def send_log_file(mess: types.Message):
     try:
@@ -375,7 +478,6 @@ async def send_log_file(mess: types.Message):
 
     except Exception as e:
         await err('die', mess, e)
-
 
 @dp.message_handler(commands=['sendmailtoandmin'])
 async def send_mail(mess: types.Message, state: FSMContext):
@@ -402,7 +504,6 @@ async def send_mail_to_admin(mess: types.Message, state: FSMContext):
         await state.finish()
         await err('die', mess, e)
 
-
 @dp.message_handler(commands=['sendmem'])
 async def mem(mess: types.Message):
     await check(mess)
@@ -424,7 +525,6 @@ async def mem(mess: types.Message):
 
     except Exception as e:
         await err('die', mess, e)
-
 
 @dp.message_handler()
 async def echo(mess: types.Message):
@@ -456,7 +556,6 @@ async def echo(mess: types.Message):
         await mem(mess)
     else:
         await err('wtf', mess)
-
 
 async def err(v, mess=None, err=None):
     if v == 'err':
