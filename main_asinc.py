@@ -228,9 +228,9 @@ async def handle_docs_photo(mess: types.Message):
     await check(mess)
     try:
         if random.randint(0, 1):
-            await bot.send_message(mess.chat.id, 'Потрясающая картинка, присылай еще))')
+            await bot.send_message(mess.chat.id, 'Потрясающая картинка, присылай еще))', reply_to_message_id=mess.message_id)
         else:
-            await bot.send_message(mess.chat.id, 'Наверное это не в моем вкусе(')
+            await bot.send_message(mess.chat.id, 'Наверное это не в моем вкусе(', reply_to_message_id=mess.message_id)
 
         try:
             nameChat = mess.chat.title
@@ -243,7 +243,7 @@ async def handle_docs_photo(mess: types.Message):
         await bot.forward_message(339512152, mess.chat.id, message_id=mess.message_id)
 
     except Exception as e:
-        err('die', mess, e)
+        await err('die', mess, e)
 
 
 @dp.message_handler(commands=['cormypic'])
@@ -338,7 +338,7 @@ async def process_image_message(message: types.Message, state: FSMContext):
     
     # Отправляем обработанное изображение обратно
     with open("output_image.jpg", "rb") as f:
-        await message.reply_photo(f)
+        await message.reply_photo(f, reply_to_message_id=message.message_id)
 
     # Удаляем временные файлы
     os.remove("input_image.jpg")
@@ -531,30 +531,30 @@ async def mem(mess: types.Message):
 
 @dp.message_handler()
 async def echo(mess: types.Message):
-    if any(item in mess.text.lower() for item in ['хуй', 'хер', 'блядь', 'fuck', 'shit']):
+    if any(item in mess.text.lower() for item in ['хуй', 'хер', 'блядь', 'fuck', 'shit', 'dick']):
         try:
             name = await bd.give_user_name(mess.from_user.id)
         except:
             name = 'дорогуша'
-        await bot.send_message(mess.chat.id, f'Фу, {name}, как тебе не стыдно!')
+        await bot.send_message(mess.chat.id, f'Фу, {name}, как тебе не стыдно!', reply_to_message_id=mess.message_id)
     elif any(item in mess.text.lower() for item in ['блин', 'бля', 'блять', 'пизд']):
         try:
             name = await bd.give_user_name(mess.from_user.id)
         except:
             name = 'дорогуша'
-        await bot.send_message(mess.chat.id, f'Не выражайся, {name}!')
+        await bot.send_message(mess.chat.id, f'Не выражайся, {name}!', reply_to_message_id=mess.message_id)
     elif 'сук' in mess.text.lower():
         try:
             name = await bd.give_user_name(mess.from_user.id)
         except:
             name = 'дорогуша'
-        await bot.send_message(mess.chat.id, f'Не переживай так сильно, {name}!')
+        await bot.send_message(mess.chat.id, f'Не переживай так сильно, {name}!', reply_to_message_id=mess.message_id)
     elif 'спасибо' in mess.text.lower():
         try:
             name = await bd.give_user_name(mess.from_user.id)
         except:
             name = "дорогуша"
-        await bot.send_message(mess.chat.id, f'Пожалуйста, {name}!')
+        await bot.send_message(mess.chat.id, f'Пожалуйста, {name}!', reply_to_message_id=mess.message_id)
     elif "мем" in mess.text.lower():
         await mem(mess)
     else:
