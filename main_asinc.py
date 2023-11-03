@@ -334,15 +334,20 @@ async def process_image_message(message: types.Message, state: FSMContext):
         f.write(downloaded_file.read())
         
     # Обрабатываем изображение
-    await pc.process_image("input_image.jpg", "output_image.jpg", mode, enhancement_factor)
-    
+    if not await pc.process_image("input_image.jpg", "output_image.jpg", mode, enhancement_factor):
+        await state.finish()
+        await err('die', message, "Err in cormypic")
+    try:
     # Отправляем обработанное изображение обратно
-    with open("output_image.jpg", "rb") as f:
-        await message.reply_photo(f, reply_to_message_id=message.message_id)
+        with open("output_image.jpg", "rb") as f:
+            await message.reply_photo(f)
 
-    # Удаляем временные файлы
-    os.remove("input_image.jpg")
-    os.remove("output_image.jpg")
+        # Удаляем временные файлы
+        os.remove("input_image.jpg")
+        os.remove("output_image.jpg")
+    except Exception as e:
+        await state.finish()
+        await err('die', message, e)
         
     await state.finish()
 
