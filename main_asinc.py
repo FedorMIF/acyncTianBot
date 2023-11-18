@@ -37,6 +37,7 @@ list_commands = ['- Напиши "привет", для того что бы п�
                  #'- /addnote - добавить заметку', '- /showallnotes - посмотреть все текущие заметки',
                  #'- /dellnote - удалить заметку', '- /menu - открыть меню', 
                  '-/playfive - игра 5 букв', '- /sendmailtoandmin - отправить сообщение админу', '- Попроси "мем" для расслабона и чилла',
+                 '-/cormypic - мини фотошоп (beta)',
                  #'- напиши "Поздравление" если хочешь получить новогоднюю картинку'
                  ]
 list_commands_adm = ['- Напиши "привет", для того что бы познакомиться', '- /help - Список всех комманд',
@@ -363,6 +364,14 @@ async def process_image_message(message: types.Message, state: FSMContext):
 #
 #    except Exception as e:
 #        await err('die', mess, e)
+
+@dp.message_handler(commands=['gettaro'])
+async def show_taro(mess: types.Message):
+    try:
+        img, cap = await img_from_site.get_taro()
+        await bot.send_photo(mess.chat.id, photo=img, caption=cap)
+    except Exception as e:
+        await err('die', mess, e)
 
 
 @dp.message_handler(commands=['showusersname'])

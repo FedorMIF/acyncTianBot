@@ -10,6 +10,24 @@ async def fetch_html(url):
         async with session.get(url) as response:
             return await response.text()
 
+async def get_taro():
+    """Parse images from a given URL."""
+    url = "https://vedovstvo.by/galereya-taro-rajdera-uejta/"
+    html = await fetch_html(url)
+    soup = BeautifulSoup(html, 'html.parser')
+    images = []
+    for div in soup.find_all("div", class_="col-md-3"):
+        img = div.find("img")
+        #print(img)
+        if img and img.get("src") and img.get("alt"):
+            images.append([img["src"], img["alt"]])
+
+
+    #img = random.choice(images)
+
+    #return "https://arcantaro.ru/deck/1/"+random.choice(images)
+    return random.choice(images) 
+
 async def find_image_links(url):
     html_content = await fetch_html(url)
     soup = BeautifulSoup(html_content, 'html.parser')
