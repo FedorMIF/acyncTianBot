@@ -1,0 +1,5 @@
+aiogram==2.14
+aiohttp
+beautifulsoup4
+aiosqlite
+Pillow

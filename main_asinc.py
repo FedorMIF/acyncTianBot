@@ -276,7 +276,6 @@ async def cmd_start(message: types.Message):
     await message.reply("Что ты хочешь сделать?", reply_markup=markup)
     await Form.mode.set()
 
-
 @dp.callback_query_handler(state=Form.mode)
 async def process_callback(callback_query: types.CallbackQuery, state: FSMContext):
     await bot.answer_callback_query(callback_query.id)
