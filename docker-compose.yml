@@ -1,0 +1,8 @@
+version: '3.12'
+
+services:
+  tianbot:
+    build: .
+    volumes:
+      - .:/app
+    command: python main_asinc.py
