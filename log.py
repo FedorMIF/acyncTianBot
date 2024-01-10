@@ -47,4 +47,5 @@ async def to_kis_list(kis_id):
 
 
 async def get_file():
+    print("Я тут")
     return open('log.txt', 'r', encoding='Windows-1251')

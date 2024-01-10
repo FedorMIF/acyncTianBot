@@ -173,3 +173,4 @@
 18.11 - 22:49:56 : !!!!!Ошибка!!!!!:Message is too long после сообщения:/gettaro 339512152
 18.11 - 23:05:45 : !!!!!Ошибка!!!!!:Cannot choose from an empty sequence после сообщения:/gettaro 339512152
 18.11 - 23:06:57 : !!!!!Ошибка!!!!!:Cannot choose from an empty sequence после сообщения:/gettaro 339512152
+25.12 - 21:04:18 : !!!!!РћС€РёР±РєР°!!!!!:'utf-8' codec can't decode byte 0xce in position 24: invalid continuation byte РїРѕСЃР»Рµ СЃРѕРѕР±С‰РµРЅРёСЏ:/getlog 339512152
