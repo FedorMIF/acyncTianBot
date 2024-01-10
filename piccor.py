@@ -1,4 +1,4 @@
-from PIL import Image, ImageEnhance, ImageOps, ImageFilter
+from PIL import Image, ImageEnhance, ImageOps, ImageFilter, ImageDraw, ImageFont
 import asyncio
 
 async def process_image(image_path: str, output_path: str, mode: str, enhancement_factor=None):
@@ -53,3 +53,48 @@ async def process_image(image_path: str, output_path: str, mode: str, enhancemen
     image.save(output_path)
     return(True)
 
+async def add_demotivator_border(input_image_path: str, output_path: str, text):
+    # Load the image
+    image = Image.open(input_image_path)
+    try:
+        # Define the size of the borders and text band
+        border_size = int(max(image.size) * 0.05)  # 5% of the image size
+        bottom_band_height = int(border_size * 2)  # Twice the border size for the bottom band
+        
+        # Create a new image with border and bottom band
+        new_width = image.width + border_size * 2
+        new_height = image.height + border_size * 3
+        bordered_image = Image.new('RGB', (new_width, new_height + bottom_band_height), 'black')
+        
+        # Paste the original image onto the bordered image
+        bordered_image.paste(image, (border_size, border_size))
+        
+        # Add the text to the bottom band
+        draw = ImageDraw.Draw(bordered_image)
+        try:
+            # Load a truetype or opentype font file, and create a font object.
+            # This font file should be in the same directory as this script, or provide full path.
+            font = ImageFont.truetype("arial.ttf", int(border_size * 0.75))
+        except IOError:
+            # If the custom font can't be loaded, we fall back to a default PIL font
+            font = ImageFont.load_default()
+        
+        # Calculate text position (centered)
+        if len(text) > 1:
+            text_length = (font.getlength(text + text[1]) - font.getlength(text[1])) #/ 64
+        else:
+            text_length = font.getlength(text) #/ 64  # Convert to pixels
+        
+        text_x = (new_width - text_length) // 2
+        # Approximate the height by the font size as `getlength` does not provide height
+        text_y = new_height + (bottom_band_height - int(border_size * 3)) // 2
+        
+        # Draw the text
+        draw.text((text_x, text_y), text, font=font, fill="white")
+        
+        # Save or return the imagу
+    except:
+        return(False)
+    
+    bordered_image.save(output_path)
+    return (True)

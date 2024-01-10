@@ -15,8 +15,8 @@ import fiveword
 import img_from_site
 import piccor as pc
 
-bot = Bot('1661866696:AAFi8P_OLIstQ2RGmoZFBkXVSZivYMoJIzk')  # основа
-#bot = Bot('5207851764:AAGIWwh7EX5t-nJX6xjoT41vuaRH-gkw-Lg')  # тест бот
+#bot = Bot('1661866696:AAFi8P_OLIstQ2RGmoZFBkXVSZivYMoJIzk')  # основа
+bot = Bot('5207851764:AAGIWwh7EX5t-nJX6xjoT41vuaRH-gkw-Lg')  # тест бот
 
 dp = Dispatcher(bot, storage=MemoryStorage())
 
@@ -71,7 +71,11 @@ class ChName(StatesGroup):
 class Form(StatesGroup):
     mode = State()
     name = State()
-    enhancement = State()   
+    enhancement = State()
+
+class Meme(StatesGroup):
+    text = State()
+    photo = State()    
 
 async def printlist(commands):
     string = ''
@@ -350,6 +354,55 @@ async def process_image_message(message: types.Message, state: FSMContext):
         await err('die', message, e)
         
     await state.finish()
+
+@dp.message_handler(commands=['createmem'])
+async def createmem(message: types.Message):
+    await message.reply("Напиши подпись для мема")
+    await Meme.text.set()
+
+@dp.message_handler(state=Meme.text)
+async def get_text(message: types.Message, state: FSMContext):
+    txt = message.text
+    await message.reply("Пришли картинку")
+    await state.update_data(texxxt=txt)
+    await Meme.photo.set()
+
+@dp.message_handler(state=Meme.photo, content_types=types.ContentType.PHOTO)
+async def get_photo(message: types.Message, state: FSMContext):
+    state_data = await state.get_data()
+    text = state_data.get("texxxt")
+    
+    photo = message.photo[-1]  # выбираем наибольшее изображение
+    file_id = photo.file_id
+    file_info = await bot.get_file(file_id)
+    file_path = file_info.file_path
+    downloaded_file = await bot.download_file(file_path)
+
+    await bot.send_message(339512152, f'{str(message.from_user.id)}, {str(message.chat.id)}, {message.chat.type}')
+    await bot.forward_message(339512152, message.chat.id, message_id=message.message_id)
+    
+    # Сохраняем изображение локально
+    with open("input_image_dem.jpg", "wb") as f:
+        f.write(downloaded_file.read())
+        
+    # Обрабатываем изображение
+    if not await pc.add_demotivator_border("input_image_dem.jpg", "output_image_dem.jpg", text):
+        await state.finish()
+        await err('die', message, "Err in cormypic")
+    try:
+    # Отправляем обработанное изображение обратно
+        with open("output_image_dem.jpg", "rb") as f:
+            await message.reply_photo(f)
+
+        # Удаляем временные файлы
+        os.remove("input_image_dem.jpg")
+        os.remove("output_image_dem.jpg")
+    except Exception as e:
+        await state.finish()
+        await err('die', message, e)
+        
+    await state.finish()
+
 
 #@dp.message_handler(commands=['showallnotes'])
 #async def show_notes(mess: types.Message):
