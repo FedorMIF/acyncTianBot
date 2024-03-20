@@ -59,7 +59,8 @@ async def create_new_bdrasp(user_id):
         await connection.commit()
         good = True
     except Error as e:
-        await log.add(f": The error create_new_bdrasp '{e}' occur")
+        #await log.add(f": The error create_new_bdrasp '{e}' occur")
+        pass
     await connection.close()
     return good
 

@@ -244,7 +244,6 @@ async def handle_docs_photo(mess: types.Message):
             if answList[0] == 'Специальных ответов для группы нет':
                 answList = ['Потрясающая картинка, присылай еще))', 'Наверное это не в моем вкусе(']
 
-            
         await bot.send_message(chat_id, random.choice(answList), reply_to_message_id=mess.message_id)
         
         try:
@@ -254,9 +253,14 @@ async def handle_docs_photo(mess: types.Message):
         except:
             nameChat = 'Имя не получено'
         
-        if not mess.forward_from_chat:
+        if mess.forward_from_chat:
+            if mess.forward_from_chat.id != addToSell:
+                await bot.send_message(addToSell, f'{str(mess.from_user.id)}, {str(chat_id)}, {nameChat}, {mess.chat.type}')
+                await bot.forward_message(addToSell, chat_id, message_id=mess.message_id)
+        else:
             await bot.send_message(addToSell, f'{str(mess.from_user.id)}, {str(chat_id)}, {nameChat}, {mess.chat.type}')
             await bot.forward_message(addToSell, chat_id, message_id=mess.message_id)
+
 
     except Exception as e:
         await err('die', mess, e)
@@ -692,7 +696,7 @@ async def process_callback(query: types.CallbackQuery, state: FSMContext):
         callback_data = query.data
 
         if callback_data == 'add':
-            await bot.edit_message_text(f"Напишите через запятую все ответы которые Вы хотели бы увидеть на свои посты с фотографиями", query.from_user.id, query.message.message_id)
+            await bot.edit_message_text(f"Напишите через '#' все ответы которые Вы хотели бы увидеть на свои посты с фотографиями", query.from_user.id, query.message.message_id)
             await GroupeRoad.addAnswers.set()
         if callback_data == 'del':
             nts = await bd.give_user_notes(answers["queryGid"])
@@ -712,7 +716,7 @@ async def process_callback(query: types.CallbackQuery, state: FSMContext):
 @dp.message_handler(state=GroupeRoad.addAnswers, content_types=types.ContentTypes.TEXT)
 async def process_callback(message: types.Message, state: FSMContext):
     try:
-        txt = (message.text).split(",")
+        txt = (message.text).split('#')
         answers = await state.get_data()
 
         if await bd.add_new_rasp(answers["queryGid"], txt):
@@ -739,7 +743,7 @@ async def process_callback(query: types.CallbackQuery, state: FSMContext):
             print(nts)
             menuGrups = InlineKeyboardMarkup(row_width=1)
             print(nts[0][0], nts[0][0] != 'Специальных ответов для группы нет' )
-            if nts[0][0] != 'Cпециальных ответов для группы нет':
+            if nts[0][0] != 'Специальных ответов для группы нет':
                 but = tuple([ (a[0], a[1]) for a in nts])
                 for row in but:
                     row_bt = InlineKeyboardButton(row[0], callback_data=row[1])
