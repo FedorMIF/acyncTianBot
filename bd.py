@@ -2,8 +2,9 @@ import re
 import aiosqlite
 import log
 from sqlite3 import Error
-path_to_bd = 'user_data.sqlite'
+import json
 
+path_to_bd = 'user_data.sqlite'
 
 async def create_connection(path):
     connection = None
@@ -13,15 +14,14 @@ async def create_connection(path):
         await log.add(f": The error '{e}' occur")
     return connection
 
-
 async def add_new_user(user_id, name):
     connection = await create_connection(path_to_bd)
     cur = await connection.cursor()
     good = False
     try:
         if await give_user_name(user_id) == '':
-            val = [(int(user_id), str(name))]
-            await cur.executemany("INSERT INTO users VALUES (?,?)", val)
+            val = [(int(user_id), str(name), 'yes' if user_id > 0 else 'no', None)]
+            await cur.executemany("INSERT INTO users VALUES (?,?,?,?)", val)
             await connection.commit()
             await log.add(f": Add new user{user_id} aka {name} successful")
             good = True
@@ -32,7 +32,6 @@ async def add_new_user(user_id, name):
         await log.add(f": The error '{e}' occur")
     await connection.close()
     return good
-
 
 async def edit_user_name(user_id, name):
     connection = await create_connection(path_to_bd)
@@ -50,72 +49,64 @@ async def edit_user_name(user_id, name):
     await connection.close()
     return good
 
-
 async def create_new_bdrasp(user_id):
     connection = await create_connection(path_to_bd)
     cur = await connection.cursor()
     good = False
+    user_id = str(user_id)[1:]
     try:
-        await cur.execute(f"CREATE TABLE user{user_id} ( id integer primary key, name text, time text)")
+        await cur.execute(f"CREATE TABLE groupe{user_id} ( id integer primary key, answers text)")
         await connection.commit()
-        await log.add(f": Connection to {user_id} DB successful")
         good = True
     except Error as e:
-        await log.add(f": The error '{e}' occur")
+        await log.add(f": The error create_new_bdrasp '{e}' occur")
     await connection.close()
     return good
 
-
-async def add_new_rasp(user_id, data, note):
+async def add_new_rasp(user_id, data):
+    user_id = str(user_id)[1:]
     connection = await create_connection(path_to_bd)
     cur = await connection.cursor()
     good = False
     try:
-        await cur.execute(f"INSERT INTO user{user_id} (name, time) VALUES ('{note}', '{data}')")
-        await connection.commit()
-        await log.add(f": Add new rasp to user{user_id}: {note}, {data} successful")
+        for answ in data:
+            await cur.execute(f"INSERT INTO groupe{user_id} (answers) VALUES ('{answ}')")
+            await connection.commit()
         good = True
     except Error as e:
-        await log.add(f": The error '{e}' occur")
+        await log.add(f": The error add_new_rasp '{e}' occur")
     await connection.close()
     return good
-
 
 async def dell_user_rasp(user_id, note_id):
+    user_id = str(user_id)[1:]
     connection = await create_connection(path_to_bd)
     cur = await connection.cursor()
     good = False
     try:
-        await cur.execute(f"DELETE FROM user{user_id} WHERE id = {note_id}")
+        await cur.execute(f"DELETE FROM groupe{user_id} WHERE id = {note_id}")
         await connection.commit()
-        await log.add(f": Dell note by user{user_id} on id={note_id} successful")
         good = True
     except Error as e:
-        await log.add(f": The error '{e}' occur")
+        await log.add(f": The error dell_user_rasp '{e}' occur")
     await connection.close()
     return good
 
-
 async def give_user_notes(user_id):
+    user_id = str(user_id)[1:]
     connection = await create_connection(path_to_bd)
     cur = await connection.cursor()
-    list_users_new = ['Ошибка']
+    row = [["Специальных ответов для группы нет"]]
     try:
-        await cur.execute(f'SELECT id, name, time FROM user{user_id}')
-        await connection.commit()
-        list_users = await cur.fetchall()
-        list_users_new.clear()
-        for st in list_users:
-            st = re.sub(r',', '', str(st))
-            st = re.sub(r'\(', '', str(st))
-            st = re.sub(r'\)', '', str(st))
-            st = re.sub(r"'", '', str(st))
-            list_users_new.append(st)
+        await cur.execute(f"SELECT answers, id FROM groupe{user_id}")
+        row = await cur.fetchall()
+        if len(row) == 0:
+            row = [["Специальных ответов для группы нет"]]
+        await connection.close()
     except Error as e:
-        await log.add(f": The error '{e}' occur")
-    await connection.close()
-    return list_users_new
-
+        await connection.close()
+        await log.add(f": The error give_user_notes '{e}' occur")
+    return row
 
 async def give_user_name(user_id):
     connection = await create_connection(path_to_bd)
@@ -143,7 +134,57 @@ async def give_user_name(user_id):
     await connection.close()
     return name
 
+async def add_groupe(user_id, data):
+    connection = await create_connection(path_to_bd)
+    cur = await connection.cursor()
+    good = False
+    print(data)
+    try:
+        await cur.execute("SELECT grups FROM users WHERE id = ?", (user_id,))
+        row = await cur.fetchone()
+        if row:
+            current_grups = json.loads(row[0]) if row[0] else []
+            if data not in current_grups:
+                current_grups.append(data)
+                updated_grups_str = json.dumps(current_grups)
+                print(current_grups, updated_grups_str)
+                await cur.execute("UPDATE users SET grups = ? WHERE id = ?", (updated_grups_str, user_id))
+                await connection.commit()
+        good = True
+    except Error as e:
+        await log.add(f": The error '{e}' occur")
+    await connection.close()
+    return good
 
+async def get_groupe(user_id):
+    connection = await create_connection(path_to_bd)
+    cur = await connection.cursor()
+    try:
+        await cur.execute("SELECT grups FROM users WHERE id = ?", (user_id,))
+        row = await cur.fetchone()
+        if row:
+            current_grups = json.loads(row[0]) if row[0] else []
+
+        await connection.close()
+        return current_grups
+    except Error as e:
+        await connection.close()
+        await log.add(f": The error '{e}' occur")
+
+async def get_list_groups():
+    connection = await create_connection(path_to_bd)
+    cur = await connection.cursor()
+    row = "err"
+    try:
+        await cur.execute(f'SELECT name, id FROM users WHERE id < 0')
+        row = await cur.fetchall()
+        await connection.close()
+    except Error as e:
+        await connection.close()
+        await log.add(f": The error '{e}' occur")
+    
+    return row
+   
 async def get_list_users(var):
     connection = await create_connection(path_to_bd)
     cur = await connection.cursor()

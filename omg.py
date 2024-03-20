@@ -1,21 +1,24 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
+import asyncio
+import json
+import aiosqlite
 
-# Настройка драйвера
-driver = webdriver.Chrome('/path/to/chromedriver')
+async def add_value_to_grups(path_to_bd, user_id, new_value):
+    async with aiosqlite.connect(path_to_bd) as connection:
+        cur = await connection.cursor()
+        # Получаем текущее значение grups
+        await cur.execute("SELECT grups FROM users WHERE id = ?", (user_id,))
+        row = await cur.fetchone()
+        if row:
+            # Десериализуем строку обратно в список
+            current_grups = json.loads(row[0]) if row[0] else []
+            
+        await cur.close()
+        print(current_grups)
 
-# Открыть веб-страницу
-driver.get('https://topmemas.top')
+# Пример использования функции
+path_to_bd = 'user_data.sqlite'
+user_id = '339512152'
+new_value = 'new_group_name2'
 
-# Найти все элементы img на странице
-img_elements = driver.find_elements(By.TAG_NAME, 'img')
-
-# Извлечь ссылки на изображения
-img_links = [img.get_attribute('src') for img in img_elements]
-
-# Вывести все найденные ссылки
-for link in img_links:
-    print(link)
-
-# Закрыть браузер
-driver.quit()
+# Запускаем асинхронную функцию
+asyncio.run(add_value_to_grups(path_to_bd, user_id, new_value))

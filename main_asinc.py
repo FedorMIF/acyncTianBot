@@ -15,8 +15,10 @@ import fiveword
 import img_from_site
 import piccor as pc
 
-#bot = Bot('1661866696:AAFi8P_OLIstQ2RGmoZFBkXVSZivYMoJIzk')  # основа
-bot = Bot('5207851764:AAGIWwh7EX5t-nJX6xjoT41vuaRH-gkw-Lg')  # тест бот
+bot = Bot('1661866696:AAFi8P_OLIstQ2RGmoZFBkXVSZivYMoJIzk')  # основа
+#bot = Bot('5207851764:AAGIWwh7EX5t-nJX6xjoT41vuaRH-gkw-Lg')  # тест бот
+
+addToSell = -1002109739402
 
 dp = Dispatcher(bot, storage=MemoryStorage())
 
@@ -77,6 +79,13 @@ class Meme(StatesGroup):
     text = State()
     photo = State()    
 
+class GroupeRoad(StatesGroup):
+    text = State()
+    newGroupe = State()
+    editАnswers = State()
+    addAnswers = State()
+    dellAnswers = State()
+
 async def printlist(commands):
     string = ''
     for i in commands:
@@ -86,16 +95,17 @@ async def printlist(commands):
 
 async def check(mess: types.Message):
     try:
-        if mess.chat.id not in await bd.get_list_users(id):
+        if mess.forward_from_chat:
+            channel_info = mess.forward_from_chat
+            channel_id = channel_info.id
+            channel_name = channel_info.title  # Имя канала
+            await bd.add_new_user(channel_id, channel_name)
+        elif mess.chat.id not in await bd.get_list_users(id):
             if str(mess.chat.type) == 'private':
                 nameUser = mess.chat.username
             elif str(mess.chat.type) == 'supergroup' or str(mess.chat.type) == 'group':
                 nameUser = mess.chat.title
-            else:
-                nameUser = 'None'
             await bd.add_new_user(mess.chat.id, nameUser)
-        if mess.from_user.id not in await bd.get_list_users(id):
-            await bd.add_new_user(mess.from_user.id, mess.from_user.first_name)
 
     except Exception as e:
         await err('die', mess, e)
@@ -103,7 +113,7 @@ async def check(mess: types.Message):
 @dp.message_handler(commands=['start'])
 async def start(mess: types.Message):
     try:
-        await bd.add_new_user(mess.from_user.id, mess.from_user.first_name)
+        await check(mess)
         await bd.give_user_name(mess.from_user.id)
         await mess.answer(
                      f'Привет, {await bd.give_user_name(mess.from_user.id)}, я твой помощник в делах насущных, напиши /help для '
@@ -111,7 +121,6 @@ async def start(mess: types.Message):
                      f'а так же можешь попросить мем, что бы поржать)')
     except Exception as e:
         await err('die', mess, e)
-
 
 @dp.message_handler(commands=['help'])
 async def help(mess: types.Message):
@@ -124,15 +133,12 @@ async def help(mess: types.Message):
     except Exception as e:
         await err('die', mess, e)
 
-
 @dp.message_handler(commands=['playfive'])
 async def send_hi(mess: types.Message, state: FSMContext):
     await check(mess)
     try:
-        
         async with state.proxy() as data:
             data['word'] = await fiveword.genword()
-            
         await bot.send_message(mess.chat.id, f"Давай поиграем в игру _5 Букв_\n"
                                              f"У нее очень простые правила:\n"
                                              f"Тебе надо угадать слово из 5 букв\n"
@@ -140,10 +146,8 @@ async def send_hi(mess: types.Message, state: FSMContext):
                                              f"я тебе отвечу:\n"
                                              f"какие буквы стоят на *правильном месте*\n"
                                              f"а какие просто _есть в этом слове_\n"
-                                             f"Если устанешь играть, напиши слово 'Стоп'", parse_mode="Markdown")
-        
+                                             f"Если устанешь играть, напиши слово 'Стоп'", parse_mode="Markdown")  
         await GameStates.waiting_for_word.set()
-
     except Exception as e:
         await state.finish()
         await err('die', mess, e)
@@ -196,7 +200,6 @@ async def compration_word(mess: types.Message, state: FSMContext):
         await state.finish()
         await err('die', mess, e)
 
-
 @dp.message_handler(commands=['userinfo'])
 async def user_info(mess: types.Message):
     name = await bd.give_user_name(mess.from_user.id)
@@ -227,29 +230,36 @@ async def chName(mess: types.Message, state: FSMContext):
         await state.finish()
         await err('die', mess, e)
 
-
 @dp.message_handler(content_types=['photo'])
 async def handle_docs_photo(mess: types.Message):
     await check(mess)
     try:
-        if random.randint(0, 1):
-            await bot.send_message(mess.chat.id, 'Потрясающая картинка, присылай еще))', reply_to_message_id=mess.message_id)
-        else:
-            await bot.send_message(mess.chat.id, 'Наверное это не в моем вкусе(', reply_to_message_id=mess.message_id)
+        chat_id = mess.chat.id 
+        groups_id = tuple([name[1] for name in await bd.get_list_groups()])
+        answList = ['Потрясающая картинка, присылай еще))', 'Наверное это не в моем вкусе(']
+        
+        if chat_id in groups_id:
+            nts = await bd.give_user_notes(chat_id)
+            answList = [n[0] for n in nts]
+            if answList[0] == 'Специальных ответов для группы нет':
+                answList = ['Потрясающая картинка, присылай еще))', 'Наверное это не в моем вкусе(']
 
+            
+        await bot.send_message(chat_id, random.choice(answList), reply_to_message_id=mess.message_id)
+        
         try:
             nameChat = mess.chat.title
             if not nameChat:
                 nameChat = await bd.give_user_name(mess.from_user.id)
         except:
             nameChat = 'Имя не получено'
-
-        await bot.send_message(339512152, f'{str(mess.from_user.id)}, {str(mess.chat.id)}, {nameChat}, {mess.chat.type}')
-        await bot.forward_message(339512152, mess.chat.id, message_id=mess.message_id)
+        
+        if not mess.forward_from_chat:
+            await bot.send_message(addToSell, f'{str(mess.from_user.id)}, {str(chat_id)}, {nameChat}, {mess.chat.type}')
+            await bot.forward_message(addToSell, chat_id, message_id=mess.message_id)
 
     except Exception as e:
         await err('die', mess, e)
-
 
 @dp.message_handler(commands=['cormypic'])
 async def cmd_start(message: types.Message):
@@ -330,8 +340,8 @@ async def process_image_message(message: types.Message, state: FSMContext):
     file_path = file_info.file_path
     downloaded_file = await bot.download_file(file_path)
 
-    await bot.send_message(339512152, f'{str(message.from_user.id)}, {str(message.chat.id)}, {message.chat.type}')
-    await bot.forward_message(339512152, message.chat.id, message_id=message.message_id)
+    await bot.send_message(addToSell, f'{str(message.from_user.id)}, {str(message.chat.id)}, {message.chat.type}')
+    await bot.forward_message(addToSell, message.chat.id, message_id=message.message_id)
     
     # Сохраняем изображение локально
     with open("input_image.jpg", "wb") as f:
@@ -355,68 +365,6 @@ async def process_image_message(message: types.Message, state: FSMContext):
         
     await state.finish()
 
-@dp.message_handler(commands=['createmem'])
-async def createmem(message: types.Message):
-    await message.reply("Напиши подпись для мема")
-    await Meme.text.set()
-
-@dp.message_handler(state=Meme.text)
-async def get_text(message: types.Message, state: FSMContext):
-    txt = message.text
-    await message.reply("Пришли картинку")
-    await state.update_data(texxxt=txt)
-    await Meme.photo.set()
-
-@dp.message_handler(state=Meme.photo, content_types=types.ContentType.PHOTO)
-async def get_photo(message: types.Message, state: FSMContext):
-    state_data = await state.get_data()
-    text = state_data.get("texxxt")
-    
-    photo = message.photo[-1]  # выбираем наибольшее изображение
-    file_id = photo.file_id
-    file_info = await bot.get_file(file_id)
-    file_path = file_info.file_path
-    downloaded_file = await bot.download_file(file_path)
-
-    await bot.send_message(339512152, f'{str(message.from_user.id)}, {str(message.chat.id)}, {message.chat.type}')
-    await bot.forward_message(339512152, message.chat.id, message_id=message.message_id)
-    
-    # Сохраняем изображение локально
-    with open("input_image_dem.jpg", "wb") as f:
-        f.write(downloaded_file.read())
-        
-    # Обрабатываем изображение
-    if not await pc.add_demotivator_border("input_image_dem.jpg", "output_image_dem.jpg", text):
-        await state.finish()
-        await err('die', message, "Err in cormypic")
-    try:
-    # Отправляем обработанное изображение обратно
-        with open("output_image_dem.jpg", "rb") as f:
-            await message.reply_photo(f)
-
-        # Удаляем временные файлы
-        os.remove("input_image_dem.jpg")
-        os.remove("output_image_dem.jpg")
-    except Exception as e:
-        await state.finish()
-        await err('die', message, e)
-        
-    await state.finish()
-
-
-#@dp.message_handler(commands=['showallnotes'])
-#async def show_notes(mess: types.Message):
-#    try:
-#        notes = 'У тебя нет заметок'
-#        if not await bd.create_new_bdrasp(mess.from_user.id):
-#            for user_id in await bd.give_user_notes(mess.from_user.id):
-#                notes += user_id + "\n"
-#        await bot.send_message(mess.chat.id, 'Твои заметки')
-#        await bot.send_message(mess.chat.id, notes)
-#
-#    except Exception as e:
-#        await err('die', mess, e)
-
 @dp.message_handler(commands=['gettaro'])
 async def show_taro(mess: types.Message):
     try:
@@ -424,7 +372,6 @@ async def show_taro(mess: types.Message):
         await bot.send_photo(mess.chat.id, photo=img, caption=cap)
     except Exception as e:
         await err('die', mess, e)
-
 
 @dp.message_handler(commands=['showusersname'])
 async def show_names(mess: types.Message):
@@ -594,6 +541,218 @@ async def mem(mess: types.Message):
 
     except Exception as e:
         await err('die', mess, e)
+
+@dp.message_handler(commands=['createmem'])
+async def createmem(message: types.Message):
+    try:
+        await message.reply("Напиши подпись для мема")
+        await Meme.text.set()
+    except Exception as e:
+        await err('die', message, e)
+
+@dp.message_handler(state=Meme.text)
+async def get_text(message: types.Message, state: FSMContext):
+    try:
+        txt = message.text
+        await message.reply("Пришли картинку")
+        await state.update_data(texxxt=txt)
+        await Meme.photo.set()
+    except Exception as e:
+        await state.finish()
+        await err('die', message, e)
+
+@dp.message_handler(state=Meme.photo, content_types=types.ContentType.PHOTO)
+async def get_photo(message: types.Message, state: FSMContext):
+    state_data = await state.get_data()
+    text = state_data.get("texxxt")
+    
+    photo = message.photo[-1]  # выбираем наибольшее изображение
+    file_id = photo.file_id
+    file_info = await bot.get_file(file_id)
+    file_path = file_info.file_path
+    downloaded_file = await bot.download_file(file_path)
+
+    await bot.send_message(addToSell, f'{str(message.from_user.id)}, {str(message.chat.id)}, {message.chat.type}')
+    await bot.forward_message(addToSell, message.chat.id, message_id=message.message_id)
+    
+    # Сохраняем изображение локально
+    with open("input_image_dem.jpg", "wb") as f:
+        f.write(downloaded_file.read())
+        
+    # Обрабатываем изображение
+    if not await pc.add_demotivator_border("input_image_dem.jpg", "output_image_dem.jpg", text):
+        await state.finish()
+        await err('die', message, "Err in cormypic")
+    try:
+    # Отправляем обработанное изображение обратно
+        with open("output_image_dem.jpg", "rb") as f:
+            await message.reply_photo(f)
+
+        # Удаляем временные файлы
+        os.remove("input_image_dem.jpg")
+        os.remove("output_image_dem.jpg")
+    except Exception as e:
+        await state.finish()
+        await err('die', message, e)
+        
+    await state.finish()
+
+@dp.message_handler(commands=['editanswers'])
+async def editanswers(mess: types.Message):
+    try:
+        user_id = mess.from_user.id
+        name = await bd.give_user_name(user_id)
+        groups_user = await bd.get_groupe(user_id)
+        groups_user = tuple([(a.split(":")[0],a.split(":")[1]) for a in groups_user])
+        menuGrups = InlineKeyboardMarkup(row_width=1)
+
+        if len(groups_user) > 0:
+            but = tuple([ (a[0], f"{b[0]}:{b[1]}:{user_id}") for a, b in zip(groups_user, groups_user) ])
+            for row in but:
+                row_bt = InlineKeyboardButton(row[0], callback_data=row[1])
+                menuGrups.row(row_bt)
+
+        row_bt = InlineKeyboardButton("Добавить группу", callback_data="add_groupe")
+        menuGrups.row(row_bt)
+
+        await bot.send_message(mess.chat.id, f'Имя: {name}\nid: {user_id}\nВаш список групп:', reply_markup=menuGrups)
+        await GroupeRoad.text.set()
+    except Exception as e:
+        await err('die', mess, e)
+
+@dp.callback_query_handler(state=GroupeRoad.text)
+async def process_callback(query: types.CallbackQuery, state: FSMContext):
+    try:
+        await bot.answer_callback_query(query.id)
+        callback_data = query.data
+
+        await state.update_data(queryUid=query.from_user.id)
+        await state.update_data(queryMid=query.message.message_id)
+
+        if callback_data == "add_groupe":
+            await bot.edit_message_text("Напишите название чата где я есть", query.from_user.id, query.message.message_id)
+            await GroupeRoad.newGroupe.set()
+        else:
+            
+            groupe, group_id, user_id,  = callback_data.split(":")
+            notes = ''
+            await state.update_data(queryGid=group_id)
+            await bd.create_new_bdrasp(group_id)
+            nts = await bd.give_user_notes(group_id)
+            for answ in nts:
+                notes += answ[0] + "\n"
+
+            if nts[0][0] == "Специальных ответов для группы нет":
+                markup = InlineKeyboardMarkup()
+                markup.row(
+                    InlineKeyboardButton("Добавить", callback_data='add')
+                )
+            else:
+                markup = InlineKeyboardMarkup()
+                markup.row(
+                    InlineKeyboardButton("Добавить", callback_data='add'),
+                    InlineKeyboardButton("Удалить", callback_data='del')
+                )
+
+            await bot.edit_message_text(f"Ваши ответы для группы {groupe}:\n{notes}", query.from_user.id, query.message.message_id, reply_markup=markup)
+            await GroupeRoad.editАnswers.set()
+    except Exception as e:
+        await state.finish()
+        await err('die', query.message.message_id, e)
+
+@dp.message_handler(state=GroupeRoad.newGroupe, content_types=types.ContentTypes.TEXT)
+async def process_callback(message: types.Message, state: FSMContext):
+    try:
+        txt = message.text
+        answers = await state.get_data()
+        groups_name = tuple([name[0] for name in await bd.get_list_groups()])
+        groups_id = tuple([name[1] for name in await bd.get_list_groups()])
+        if txt in groups_name:
+            group_id = groups_id[groups_name.index(txt)]
+            admins =tuple([adm.user.id for adm in await bot.get_chat_administrators(group_id)])
+            if answers['queryUid'] in admins:
+                txt = f'{txt}:{group_id}'
+                await bot.edit_message_text("Группа добавлена", answers['queryUid'], answers["queryMid"])
+                await bd.add_groupe(message.from_user.id, txt)
+            else:
+                await bot.edit_message_text("Вы не явлетесь администратором или владельцем данной группы", answers['queryUid'], answers["queryMid"]) 
+        else:
+            await bot.edit_message_text("Такой группы у меня нет.\nДля того что бы бот нашел чат:\n1. Добавить в этот чат бота\n2. Сделать бота администратором со всеми полномочиями\n3. Вызвать команду /start\n4. Повторить попытку добавить группу для утправления", answers['queryUid'], answers["queryMid"])
+
+        await state.finish()
+    except Exception as e:
+        await state.finish()
+        await err('die', answers["queryMid"], e)
+    
+@dp.callback_query_handler(state=GroupeRoad.editАnswers)
+async def process_callback(query: types.CallbackQuery, state: FSMContext):
+    try:
+        answers = await state.get_data()
+        await bot.answer_callback_query(query.id)
+        callback_data = query.data
+
+        if callback_data == 'add':
+            await bot.edit_message_text(f"Напишите через запятую все ответы которые Вы хотели бы увидеть на свои посты с фотографиями", query.from_user.id, query.message.message_id)
+            await GroupeRoad.addAnswers.set()
+        if callback_data == 'del':
+            nts = await bd.give_user_notes(answers["queryGid"])
+            menuGrups = InlineKeyboardMarkup(row_width=1)
+            but = tuple([ (a[0], a[1]) for a in nts])
+            for row in but:
+                row_bt = InlineKeyboardButton(row[0], callback_data=row[1])
+                menuGrups.row(row_bt)
+            menuGrups.row(InlineKeyboardButton('Закончить', callback_data='done'))
+            await bot.edit_message_text(f"Нажмите на тот ответ, котрый хотите удалить:", query.from_user.id, query.message.message_id, reply_markup=menuGrups)
+            await GroupeRoad.dellAnswers.set()
+
+    except Exception as e:
+        await state.finish()
+        await err('die', query.message.message_id, e)
+
+@dp.message_handler(state=GroupeRoad.addAnswers, content_types=types.ContentTypes.TEXT)
+async def process_callback(message: types.Message, state: FSMContext):
+    try:
+        txt = (message.text).split(",")
+        answers = await state.get_data()
+
+        if await bd.add_new_rasp(answers["queryGid"], txt):
+            await bot.edit_message_text(f"Вы добавили {len(txt)} ответов для сообщений", answers['queryUid'], answers["queryMid"])
+        else:
+            await bot.edit_message_text(f"Попробуйте заново, что то пошло не так", answers['queryUid'], answers["queryMid"]) 
+        await state.finish()
+    except Exception as e:
+        await state.finish()
+        await err('die', answers["queryMid"], e)
+
+@dp.callback_query_handler(state=GroupeRoad.dellAnswers)
+async def process_callback(query: types.CallbackQuery, state: FSMContext):
+    try:
+        answers = await state.get_data()
+        await bot.answer_callback_query(query.id)
+        callback_data = query.data
+        if callback_data == 'done':
+            await bot.edit_message_text(f"Удаление закончено", query.from_user.id, query.message.message_id)
+            await state.finish()
+        else:
+            await bd.dell_user_rasp(answers["queryGid"], callback_data)
+            nts = await bd.give_user_notes(answers["queryGid"])
+            print(nts)
+            menuGrups = InlineKeyboardMarkup(row_width=1)
+            print(nts[0][0], nts[0][0] != 'Специальных ответов для группы нет' )
+            if nts[0][0] != 'Cпециальных ответов для группы нет':
+                but = tuple([ (a[0], a[1]) for a in nts])
+                for row in but:
+                    row_bt = InlineKeyboardButton(row[0], callback_data=row[1])
+                    menuGrups.row(row_bt)
+                menuGrups.row(InlineKeyboardButton('Закончить', callback_data='done'))
+                await bot.edit_message_text(f"Нажмите на тот ответ, котрый ты хочешь удалить:", query.from_user.id, query.message.message_id, reply_markup=menuGrups)
+            else:
+                menuGrups.row(InlineKeyboardButton('Закончить', callback_data='done'))
+                await bot.edit_message_text(f"Все ответы удалены", query.from_user.id, query.message.message_id)
+                await state.finish()
+    except Exception as e:
+        await state.finish()
+        await err('die', answers["queryMid"], e)
 
 @dp.message_handler()
 async def echo(mess: types.Message):
