@@ -230,7 +230,7 @@ async def chName(mess: types.Message, state: FSMContext):
         await state.finish()
         await err('die', mess, e)
 
-@dp.message_handler(content_types=['photo'])
+@dp.message_handler(content_types=['photo', 'video', 'video_note'])
 async def handle_docs_photo(mess: types.Message):
     await check(mess)
     try:

@@ -1,2 +1,7 @@
 input_image.jpg
 /__pycache__
+__pycache__/bd.cpython-312.pyc
+__pycache__/fiveword.cpython-312.pyc
+__pycache__/img_from_site.cpython-312.pyc
+__pycache__/log.cpython-312.pyc
+__pycache__/piccor.cpython-312.pyc
