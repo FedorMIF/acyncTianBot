@@ -16,3 +16,8 @@
 20.03 - 16:50:03 : : Add new user-1001636612177 aka KonFedерация successful
 20.03 - 16:59:58 : : Add new user-1002111272143 aka апвыа successful
 20.03 - 16:59:58 : !!!!!Ошибка!!!!!:name 'channel_info' is not defined после сообщения:None 777000
+22.03 - 12:54:37 : : Add new user1424154512 aka tatiana_nikoza successful
+29.03 - 10:14:28 : : Add new user1176806783 aka irinagor21 successful
+29.03 - 20:34:29 : : Add new user852532528 aka polinabell97 successful
+30.03 - 19:56:42 : : Add new user534029404 aka nastya_shklyarenko successful
+03.04 - 15:03:00 : : Add new user1460753613 aka srrdrrf successful
