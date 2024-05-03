@@ -39,8 +39,13 @@ async def genword():
 
     for row in table:
         word = re.findall(r'>\w+<', str(row))
-        word = word[0].replace('>', '')
-        word = word.replace('<', '')
-        output.append(word)
+        #print(word)
+        try:
+            word = word[0].replace('>', '')
+            word = word.replace('<', '')
+            output.append(word)
+        except:
+            pass
+        
 
     return random.choice(output) if output else None
