@@ -24,3 +24,39 @@
 12.04 - 10:44:33 : : Add new user998135435 aka sonip2303 successful
 17.04 - 22:12:54 : : Add new user71124230 aka sasha_shine successful
 19.04 - 16:13:43 : : Add new user6386586073 aka Dima24352 successful
+25.05 - 15:55:34 : : Add new user686519785 aka kriiksa successful
+18.06 - 09:26:48 : : Add new user-1001013484985 aka Big Geek successful
+19.06 - 15:52:38 : : Add new user6399445566 aka bsbsbsyy successful
+19.06 - 15:53:19 : : Edit new user6399445566 aka /playfive successful
+27.06 - 18:01:02 : : Add new user5254534458 aka etonedianaa successful
+24.08 - 09:50:31 : : Add new user-1001307778786 aka Эксплойт successful
+24.08 - 09:50:31 : : The error 'UNIQUE constraint failed: users.id' occur
+24.08 - 09:50:31 : : The error 'UNIQUE constraint failed: users.id' occur
+24.08 - 09:50:31 : : The error 'UNIQUE constraint failed: users.id' occur
+01.09 - 13:45:53 : : Add new user6228516316 aka jaroslavhadzic successful
+01.09 - 13:56:58 : !!!!!Ошибка!!!!!:Invalid file http url specified: url host is empty после сообщения:/sendmem 6228516316
+01.09 - 14:00:07 : !!!!!Ошибка!!!!!:Invalid file http url specified: url host is empty после сообщения:/sendmem 339512152
+01.10 - 18:51:19 : : Add new user749517436 aka PavelArtushkin successful
+24.10 - 20:11:21 : : Add new user6930166973 aka None successful
+01.11 - 14:21:05 : : The error 'UNIQUE constraint failed: users.id' occur
+01.11 - 14:21:05 : : Add new user1823492972 aka Hunterunterr0000 successful
+04.11 - 15:51:51 : : Add new user929466979 aka marenich_lifestyle successful
+11.11 - 12:55:02 : : Add new user350172682 aka ryabovk successful
+02.12 - 09:05:05 : : Add new user-1001319248631 aka Бэкдор successful
+07.12 - 14:45:54 : : Add new user-1002467939532 aka чат Подвал AliExpress successful
+07.12 - 14:45:54 : : The error give_user_notes 'no such table: groupe1002467939532' occur
+07.12 - 14:45:55 : !!!!!Ошибка!!!!!:Message to be replied not found после сообщения:None 1087968824
+07.12 - 15:32:18 : : Add new user-1002297205914 aka Подвал AliExpress successful
+07.12 - 15:32:18 : : The error give_user_notes 'no such table: groupe1002467939532' occur
+07.12 - 15:47:27 : caption = "[ПОДВАЛ ALI EXPRESS\\!](https://t.me/+zaBaXE7-oL1kYzFi)" 339512152
+07.12 - 16:10:14 : : The error give_user_notes 'no such table: groupe1002467939532' occur
+07.12 - 19:41:12 : : The error give_user_notes 'no such table: groupe1002467939532' occur
+07.12 - 19:41:12 : : The error give_user_notes 'no such table: groupe1002467939532' occur
+07.12 - 19:41:12 : : The error give_user_notes 'no such table: groupe1002467939532' occur
+07.12 - 19:42:01 : : The error give_user_notes 'no such table: groupe1002467939532' occur
+07.12 - 19:42:01 : : The error give_user_notes 'no such table: groupe1002467939532' occur
+07.12 - 19:42:01 : : The error give_user_notes 'no such table: groupe1002467939532' occur
+15.12 - 18:31:47 : !!!!!Ошибка!!!!!:Message to forward not found после сообщения:None 777000
+11.01 - 23:32:26 : : Add new user5437148732 aka None successful
+16.01 - 07:18:15 : : Add new user6376932568 aka None successful
+03.04 - 13:11:20 : : Add new user914396732 aka Kiriyyan successful
