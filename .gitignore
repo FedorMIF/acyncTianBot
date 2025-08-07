@@ -1,5 +1,6 @@
 input_image.jpg
-__pycache__
-*.pyc
 http.txt
 key.py
+.venv
+__pycache__
+*.pyc
