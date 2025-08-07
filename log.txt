@@ -140,3 +140,181 @@
 07.08 - 10:41:53 : : Created game_stats table successfully
 07.08 - 10:43:24 : : Created game_stats table successfully
 07.08 - 11:10:43 : : Created game_stats table successfully
+07.08 - 12:13:26 : : Created achievements tables successfully
+07.08 - 12:13:26 : : Created achievements tables successfully
+07.08 - 12:13:26 : : Created achievements tables successfully
+07.08 - 12:13:26 : : Created achievements tables successfully
+07.08 - 12:13:26 : : Created achievements tables successfully
+07.08 - 12:13:26 : : Created achievements tables successfully
+07.08 - 12:13:26 : : Created achievements tables successfully
+07.08 - 12:13:26 : : Initialized achievements successfully
+07.08 - 12:13:30 : : Created achievements tables successfully
+07.08 - 12:13:31 : : The error initializing achievements 'database is locked' occur
+07.08 - 12:13:31 : : The error initializing achievements 'database is locked' occur
+07.08 - 12:13:31 : : The error initializing achievements 'database is locked' occur
+07.08 - 12:13:31 : : The error initializing achievements 'database is locked' occur
+07.08 - 12:13:31 : : The error initializing achievements 'database is locked' occur
+07.08 - 12:13:31 : : The error initializing achievements 'database is locked' occur
+07.08 - 12:13:31 : : The error update_active_days 'database is locked' occur
+07.08 - 12:13:35 : : The error initializing achievements 'database is locked' occur
+07.08 - 12:13:36 : : The error update_user_stats 'database is locked' occur
+07.08 - 12:13:36 : : The error update_user_stats 'database is locked' occur
+07.08 - 12:13:36 : : The error update_active_days 'database is locked' occur
+07.08 - 12:13:36 : : The error update_user_stats 'database is locked' occur
+07.08 - 12:13:36 : : The error check_achievements 'database is locked' occur
+07.08 - 12:13:36 : : The error update_user_stats 'database is locked' occur
+07.08 - 12:13:36 : : The error update_user_stats 'database is locked' occur
+07.08 - 12:13:36 : : Created game_stats table successfully
+07.08 - 12:13:36 : : Created game_stats table successfully
+07.08 - 12:13:36 : : The error check_achievements 'UNIQUE constraint failed: user_achievements.user_id, user_achievements.achievement_id' occur
+07.08 - 12:13:36 : : The error check_achievements 'UNIQUE constraint failed: user_achievements.user_id, user_achievements.achievement_id' occur
+07.08 - 12:13:36 : : Created game_stats table successfully
+07.08 - 12:13:41 : : The error update_active_days 'database is locked' occur
+07.08 - 12:13:47 : : Created achievements tables successfully
+07.08 - 12:13:47 : : Initialized achievements successfully
+07.08 - 12:13:52 : : The error update_active_days 'database is locked' occur
+07.08 - 12:25:30 : : Created achievements tables successfully
+07.08 - 12:25:30 : : Initialized achievements successfully
+07.08 - 12:25:35 : : The error update_active_days 'database is locked' occur
+07.08 - 12:25:36 : : Created game_stats table successfully
+07.08 - 12:25:47 : : Created achievements tables successfully
+07.08 - 12:25:47 : : Initialized achievements successfully
+07.08 - 12:25:52 : : The error update_active_days 'database is locked' occur
+07.08 - 12:25:56 : : Created achievements tables successfully
+07.08 - 12:25:56 : : Initialized achievements successfully
+07.08 - 12:26:01 : : The error update_active_days 'database is locked' occur
+07.08 - 12:26:17 : : Created achievements tables successfully
+07.08 - 12:26:17 : : Initialized achievements successfully
+07.08 - 12:26:22 : : The error update_active_days 'database is locked' occur
+07.08 - 12:26:27 : : Created achievements tables successfully
+07.08 - 12:26:27 : : Initialized achievements successfully
+07.08 - 12:26:32 : : The error update_active_days 'database is locked' occur
+07.08 - 12:27:03 : : Created achievements tables successfully
+07.08 - 12:27:03 : : Initialized achievements successfully
+07.08 - 12:27:08 : : The error update_active_days 'database is locked' occur
+07.08 - 12:27:17 : : Created achievements tables successfully
+07.08 - 12:27:17 : : Initialized achievements successfully
+07.08 - 12:27:22 : : The error update_active_days 'database is locked' occur
+07.08 - 12:27:27 : : Created achievements tables successfully
+07.08 - 12:27:27 : : Initialized achievements successfully
+07.08 - 12:27:32 : : The error update_active_days 'database is locked' occur
+07.08 - 12:50:07 : : Created achievements tables successfully
+07.08 - 12:50:07 : : Initialized achievements successfully
+07.08 - 12:50:12 : : The error update_active_days 'database is locked' occur
+07.08 - 12:50:18 : : Created achievements tables successfully
+07.08 - 12:50:18 : : Initialized achievements successfully
+07.08 - 12:50:24 : : The error update_active_days 'database is locked' occur
+07.08 - 12:50:26 : : Created achievements tables successfully
+07.08 - 12:50:26 : : Initialized achievements successfully
+07.08 - 12:50:31 : : The error update_active_days 'database is locked' occur
+07.08 - 13:34:17 : : Add new user790083431 aka KonFederacy successful
+07.08 - 13:34:23 : : Created achievements tables successfully
+07.08 - 13:34:26 : : Created achievements tables successfully
+07.08 - 13:34:26 : : Created achievements tables successfully
+07.08 - 13:34:42 : : Created achievements tables successfully
+07.08 - 13:34:42 : : Created achievements tables successfully
+07.08 - 13:34:56 : : Created game_stats table successfully
+07.08 - 13:35:01 : : Created achievements tables successfully
+07.08 - 13:35:10 : : Created achievements tables successfully
+07.08 - 13:35:10 : : Created achievements tables successfully
+07.08 - 13:35:16 : : Created achievements tables successfully
+07.08 - 13:35:16 : : Created achievements tables successfully
+07.08 - 13:37:16 : : Created achievements tables successfully
+07.08 - 13:37:16 : /addachievement social_butterfly|Социальная бабочка|500 сообщений в группах|🦋|group|500|group_messages 339512152
+07.08 - 13:37:20 : : Created achievements tables successfully
+07.08 - 13:37:20 : /addachievement 339512152
+07.08 - 13:39:03 : : Created game_stats table successfully
+07.08 - 13:39:08 : : Created achievements tables successfully
+07.08 - 13:39:18 : : Created achievements tables successfully
+07.08 - 13:39:18 : : Created achievements tables successfully
+07.08 - 13:39:21 : : Created achievements tables successfully
+07.08 - 13:39:21 : /addachievement 339512152
+07.08 - 13:39:34 : : Created achievements tables successfully
+07.08 - 13:39:34 : : Created achievements tables successfully
+07.08 - 13:42:40 : -1002467939532: эта крыса меня забанила
+07.08 - 13:42:41 : -1001636612177: эта крыса меня забанила
+07.08 - 13:42:41 : -1001319248631: эта крыса меня забанила
+07.08 - 13:42:42 : -1001307778786: эта крыса меня забанила
+07.08 - 13:42:42 : -1001013484985: эта крыса меня забанила
+07.08 - 13:42:42 : 777000: эта крыса меня забанила
+07.08 - 13:42:42 : 71124230: эта крыса меня забанила
+07.08 - 13:42:42 : 134653840: эта крыса меня забанила
+07.08 - 13:42:42 : 136817688: эта крыса меня забанила
+07.08 - 13:42:42 : 312987997: эта крыса меня забанила
+07.08 - 13:42:43 : 350172682: эта крыса меня забанила
+07.08 - 13:42:43 : 354897782: эта крыса меня забанила
+07.08 - 13:42:43 : 374757362: эта крыса меня забанила
+07.08 - 13:42:44 : 534029404: эта крыса меня забанила
+07.08 - 13:42:44 : 545822073: эта крыса меня забанила
+07.08 - 13:42:44 : 665022782: эта крыса меня забанила
+07.08 - 13:42:44 : : Created achievements tables successfully
+07.08 - 13:42:44 : 677508755: эта крыса меня забанила
+07.08 - 13:42:44 : : Error sending achievement notification to 777000: Forbidden: bots can't send messages to bots
+07.08 - 13:42:44 : : Created achievements tables successfully
+07.08 - 13:42:45 : 749517436: эта крыса меня забанила
+07.08 - 13:42:45 : 852532528: эта крыса меня забанила
+07.08 - 13:42:45 : 870314011: эта крыса меня забанила
+07.08 - 13:42:46 : 998135435: эта крыса меня забанила
+07.08 - 13:42:46 : 1010379334: эта крыса меня забанила
+07.08 - 13:42:46 : 1049511554: эта крыса меня забанила
+07.08 - 13:42:46 : 1066685133: эта крыса меня забанила
+07.08 - 13:42:46 : 1087968824: эта крыса меня забанила
+07.08 - 13:42:46 : 1176806783: эта крыса меня забанила
+07.08 - 13:42:47 : 1424154512: эта крыса меня забанила
+07.08 - 13:42:47 : 5254534458: эта крыса меня забанила
+07.08 - 13:42:47 : 5276175820: эта крыса меня забанила
+07.08 - 13:42:48 : 5437148732: эта крыса меня забанила
+07.08 - 13:42:48 : 5753609333: эта крыса меня забанила
+07.08 - 13:42:48 : 6326311776: эта крыса меня забанила
+07.08 - 13:42:48 : 6386586073: эта крыса меня забанила
+07.08 - 13:42:48 : 6399445566: эта крыса меня забанила
+07.08 - 13:42:48 : 6930166973: эта крыса меня забанила
+07.08 - 13:42:48 : 8097523304: эта крыса меня забанила
+07.08 - 13:43:23 : : Created achievements tables successfully
+07.08 - 13:43:23 : : Created achievements tables successfully
+07.08 - 13:44:14 : : Created achievements tables successfully
+07.08 - 13:44:15 : : Created game_stats table successfully
+07.08 - 13:44:30 : : Created game_stats table successfully
+07.08 - 13:46:35 : -1002467939532: эта крыса меня забанила
+07.08 - 13:46:35 : -1001636612177: эта крыса меня забанила
+07.08 - 13:46:35 : -1001319248631: эта крыса меня забанила
+07.08 - 13:46:36 : -1001307778786: эта крыса меня забанила
+07.08 - 13:46:36 : -1001013484985: эта крыса меня забанила
+07.08 - 13:46:36 : 777000: эта крыса меня забанила
+07.08 - 13:46:36 : 71124230: эта крыса меня забанила
+07.08 - 13:46:36 : 134653840: эта крыса меня забанила
+07.08 - 13:46:36 : 136817688: эта крыса меня забанила
+07.08 - 13:46:36 : 312987997: эта крыса меня забанила
+07.08 - 13:46:37 : 350172682: эта крыса меня забанила
+07.08 - 13:46:37 : 354897782: эта крыса меня забанила
+07.08 - 13:46:37 : 374757362: эта крыса меня забанила
+07.08 - 13:46:37 : 482716538: эта крыса меня забанила
+07.08 - 13:46:38 : 534029404: эта крыса меня забанила
+07.08 - 13:46:38 : 545822073: эта крыса меня забанила
+07.08 - 13:46:38 : : Created achievements tables successfully
+07.08 - 13:46:38 : 665022782: эта крыса меня забанила
+07.08 - 13:46:38 : 677508755: эта крыса меня забанила
+07.08 - 13:46:39 : 749517436: эта крыса меня забанила
+07.08 - 13:46:39 : 852532528: эта крыса меня забанила
+07.08 - 13:46:40 : 870314011: эта крыса меня забанила
+07.08 - 13:46:40 : 998135435: эта крыса меня забанила
+07.08 - 13:46:40 : 1010379334: эта крыса меня забанила
+07.08 - 13:46:40 : 1049511554: эта крыса меня забанила
+07.08 - 13:46:40 : 1066685133: эта крыса меня забанила
+07.08 - 13:46:41 : 1087968824: эта крыса меня забанила
+07.08 - 13:46:41 : 1176806783: эта крыса меня забанила
+07.08 - 13:46:41 : 1424154512: эта крыса меня забанила
+07.08 - 13:46:41 : 5254534458: эта крыса меня забанила
+07.08 - 13:46:42 : 5276175820: эта крыса меня забанила
+07.08 - 13:46:42 : 5437148732: эта крыса меня забанила
+07.08 - 13:46:42 : 5753609333: эта крыса меня забанила
+07.08 - 13:46:42 : 6326311776: эта крыса меня забанила
+07.08 - 13:46:42 : 6386586073: эта крыса меня забанила
+07.08 - 13:46:42 : 6399445566: эта крыса меня забанила
+07.08 - 13:46:42 : 6930166973: эта крыса меня забанила
+07.08 - 13:46:42 : 8097523304: эта крыса меня забанила
+07.08 - 13:46:45 : : Created game_stats table successfully
+07.08 - 13:46:55 : : Created game_stats table successfully
+07.08 - 13:47:35 : : Created achievements tables successfully
+07.08 - 13:47:35 : : Created achievements tables successfully
+07.08 - 13:47:46 : : Created game_stats table successfully

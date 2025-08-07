@@ -1,0 +1,277 @@
+{
+  "categories": {
+    "communication": {
+      "name": "💬 За общение",
+      "description": "Достижения за активность в чате"
+    },
+    "gaming": {
+      "name": "🎮 За игры", 
+      "description": "Достижения за игру в '5 букв'"
+    },
+    "behavior": {
+      "name": "😈 За поведение",
+      "description": "Достижения за различные действия"
+    },
+    "group": {
+      "name": "👥 Групповые",
+      "description": "Достижения за активность в группах"
+    }
+  },
+  "achievements": {
+    "talker_1": {
+      "name": "Болтун",
+      "description": "Отправить 100 сообщений",
+      "icon": "💬",
+      "category": "communication",
+      "threshold": 100,
+      "stat": "total_messages",
+      "enabled": true
+    },
+    "talker_2": {
+      "name": "Говорун",
+      "description": "Отправить 500 сообщений",
+      "icon": "🗣️",
+      "category": "communication",
+      "threshold": 500,
+      "stat": "total_messages",
+      "enabled": true
+    },
+    "talker_3": {
+      "name": "Оратор",
+      "description": "Отправить 1000 сообщений",
+      "icon": "🎤",
+      "category": "communication",
+      "threshold": 1000,
+      "stat": "total_messages",
+      "enabled": true
+    },
+    "talker_4": {
+      "name": "Легенда общения",
+      "description": "Отправить 5000 сообщений",
+      "icon": "👑",
+      "category": "communication",
+      "threshold": 5000,
+      "stat": "total_messages",
+      "enabled": true
+    },
+    "friend_1": {
+      "name": "Знакомый",
+      "description": "Общаться 7 дней",
+      "icon": "👋",
+      "category": "communication",
+      "threshold": 7,
+      "stat": "active_days",
+      "enabled": true
+    },
+    "friend_2": {
+      "name": "Друг",
+      "description": "Общаться 30 дней",
+      "icon": "🤝",
+      "category": "communication",
+      "threshold": 30,
+      "stat": "active_days",
+      "enabled": true
+    },
+    "friend_3": {
+      "name": "Верный спутник",
+      "description": "Общаться 100 дней",
+      "icon": "❤️",
+      "category": "communication",
+      "threshold": 100,
+      "stat": "active_days",
+      "enabled": true
+    },
+    "night_owl": {
+      "name": "Ночная сова",
+      "description": "50 ночных сообщений (23:00-6:00)",
+      "icon": "🦉",
+      "category": "communication",
+      "threshold": 50,
+      "stat": "night_messages",
+      "enabled": true
+    },
+    "writer": {
+      "name": "Писатель",
+      "description": "Написать сообщение 500+ символов",
+      "icon": "✍️",
+      "category": "communication",
+      "threshold": 500,
+      "stat": "max_message_length",
+      "enabled": true
+    },
+    "gamer_1": {
+      "name": "Новичок",
+      "description": "Сыграть 1 игру",
+      "icon": "🎮",
+      "category": "gaming",
+      "threshold": 1,
+      "stat": "games_played",
+      "enabled": true
+    },
+    "gamer_2": {
+      "name": "Игроман",
+      "description": "Сыграть 50 игр",
+      "icon": "🕹️",
+      "category": "gaming",
+      "threshold": 50,
+      "stat": "games_played",
+      "enabled": true
+    },
+    "gamer_3": {
+      "name": "Заядлый игрок",
+      "description": "Сыграть 100 игр",
+      "icon": "🎯",
+      "category": "gaming",
+      "threshold": 100,
+      "stat": "games_played",
+      "enabled": true
+    },
+    "gamer_4": {
+      "name": "Мастер игр",
+      "description": "Сыграть 500 игр",
+      "icon": "🏆",
+      "category": "gaming",
+      "threshold": 500,
+      "stat": "games_played",
+      "enabled": true
+    },
+    "streak_1": {
+      "name": "Везунчик",
+      "description": "5 побед подряд",
+      "icon": "🍀",
+      "category": "gaming",
+      "threshold": 5,
+      "stat": "max_win_streak",
+      "enabled": true
+    },
+    "streak_2": {
+      "name": "Мастер слов",
+      "description": "10 побед подряд",
+      "icon": "📝",
+      "category": "gaming",
+      "threshold": 10,
+      "stat": "max_win_streak",
+      "enabled": true
+    },
+    "streak_3": {
+      "name": "Гений слов",
+      "description": "25 побед подряд",
+      "icon": "🧠",
+      "category": "gaming",
+      "threshold": 25,
+      "stat": "max_win_streak",
+      "enabled": true
+    },
+    "perfectionist": {
+      "name": "Перфекционист",
+      "description": "95%+ побед при 20+ играх",
+      "icon": "⭐",
+      "category": "gaming",
+      "threshold": 95,
+      "stat": "win_rate_percentage",
+      "enabled": true,
+      "special_condition": "min_games_20"
+    },
+    "persistent": {
+      "name": "Упорный",
+      "description": "100+ незавершенных игр",
+      "icon": "💪",
+      "category": "gaming",
+      "threshold": 100,
+      "stat": "games_quit",
+      "enabled": true
+    },
+    "hooligan_1": {
+      "name": "Хулиган",
+      "description": "50 замечаний за мат",
+      "icon": "😈",
+      "category": "behavior",
+      "threshold": 50,
+      "stat": "profanity_warnings",
+      "enabled": true
+    },
+    "hooligan_2": {
+      "name": "Буян",
+      "description": "100 замечаний за мат",
+      "icon": "👹",
+      "category": "behavior",
+      "threshold": 100,
+      "stat": "profanity_warnings",
+      "enabled": true
+    },
+    "hooligan_3": {
+      "name": "Демон",
+      "description": "500 замечаний за мат",
+      "icon": "👺",
+      "category": "behavior",
+      "threshold": 500,
+      "stat": "profanity_warnings",
+      "enabled": true
+    },
+    "hooligan_4": {
+      "name": "Повелитель мата",
+      "description": "1000 замечаний за мат",
+      "icon": "🔥",
+      "category": "behavior",
+      "threshold": 1000,
+      "stat": "profanity_warnings",
+      "enabled": true
+    },
+    "explorer": {
+      "name": "Исследователь",
+      "description": "Использовать 10 разных команд",
+      "icon": "🗺️",
+      "category": "behavior",
+      "threshold": 10,
+      "stat": "commands_used",
+      "enabled": true
+    },
+    "meme_master": {
+      "name": "Мем-мастер",
+      "description": "Запросить 50 мемов",
+      "icon": "😂",
+      "category": "behavior",
+      "threshold": 50,
+      "stat": "memes_requested",
+      "enabled": true
+    },
+    "photoshopper": {
+      "name": "Фотошопер",
+      "description": "Отредактировать 10 фото",
+      "icon": "🎨",
+      "category": "behavior",
+      "threshold": 10,
+      "stat": "photos_edited",
+      "enabled": true
+    },
+    "group_activist": {
+      "name": "Активист группы",
+      "description": "100+ сообщений в группах",
+      "icon": "👥",
+      "category": "group",
+      "threshold": 100,
+      "stat": "group_messages",
+      "enabled": true
+    },
+    "group_champion": {
+      "name": "Чемпион группы",
+      "description": "1 место в топе группы",
+      "icon": "🏆",
+      "category": "group",
+      "threshold": 1,
+      "stat": "group_top_position",
+      "enabled": false,
+      "note": "Требует отдельную логику проверки"
+    },
+    "pioneer": {
+      "name": "Первопроходец",
+      "description": "Один из первых 100 пользователей",
+      "icon": "⭐",
+      "category": "behavior",
+      "threshold": 100,
+      "stat": "user_registration_order",
+      "enabled": false,
+      "note": "Требует отдельную логику проверки"
+    }
+  }
+}

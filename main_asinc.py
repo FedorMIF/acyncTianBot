@@ -40,6 +40,7 @@ list_commands = ['- Напиши "привет", для того что бы п�
                  #'- /addnote - добавить заметку', '- /showallnotes - посмотреть все текущие заметки',
                  #'- /dellnote - удалить заметку', '- /menu - открыть меню', 
                  '-/playfive - игра 5 букв', '- /mystats - моя статистика в игре 5 букв', '- /gametop - топ игроков в чате',
+                 '- /profile - мой профиль и достижения', '- /achievements - все мои достижения',
                  '- /sendmailtoandmin - отправить сообщение админу', '- Попроси "мем" для расслабона и чилла',
                  '-/cormypic - мини фотошоп (beta)',
                  #'- напиши "Поздравление" если хочешь получить новогоднюю картинку'
@@ -50,6 +51,8 @@ list_commands_adm = [ '- /help - Список всех комманд',
                      '- /showusersname - посомтреть всех юзеров с их id',
                      '- /sendmess - отослать всем сообщение', '- /sendmesstouser - отдельному челу',
                      '- /getlog - получить логфайл', '- /mystats - моя статистика в игре 5 букв', '- /gametop - топ игроков',
+                     '- /profile - мой профиль и достижения', '- /achievements - все мои достижения',
+                     '- /addachievement - добавить новое достижение', '- /listachievements - список всех достижений',
                      '- Попроси "мем" для расслабона и чилла', '- /tospecial - бро/кис'
                     #'- напиши "Поздравление" если хочешь получить новогоднюю картинку'
                     ]
@@ -129,6 +132,13 @@ async def start(mess: types.Message):
 async def help(mess: types.Message):
     await check(mess)
     try:
+        # Отслеживаем использование команды
+        from datetime import datetime
+        current_hour = datetime.now().hour
+        is_night = 23 <= current_hour or current_hour <= 6
+        await track_activity(mess.from_user.id, "command", 1, 
+                           mess.chat.type in ['group', 'supergroup'], is_night)
+        
         if mess.from_user.id == 339512152:
             await mess.answer(await printlist(list_commands_adm), reply_markup=types.ReplyKeyboardRemove())
         else:
@@ -169,6 +179,10 @@ async def compration_word(mess: types.Message, state: FSMContext):
         if userword == 'стоп':
             # Записываем статистику как незавершенную игру
             await bd.update_game_stats(mess.from_user.id, is_completed=False)
+            
+            # Сбрасываем серию побед
+            await track_activity(mess.from_user.id, "win_streak", 0)
+            
             await bot.send_message(mess.chat.id, f'Жаль, что не доиграли, слово было: {word}')
             await state.finish()
 
@@ -199,6 +213,13 @@ async def compration_word(mess: types.Message, state: FSMContext):
             else:
                 # Записываем статистику как завершенную игру
                 await bd.update_game_stats(mess.from_user.id, is_completed=True)
+                
+                # Увеличиваем серию побед
+                user_stats = await bd.get_or_create_user_stats(mess.from_user.id)
+                if user_stats:
+                    current_streak = user_stats[12] + 1  # win_streak
+                    await track_activity(mess.from_user.id, "win_streak", current_streak)
+                
                 await bot.send_message(mess.chat.id, f'Молодец, это было слово: {word}')
                 await state.finish()
 
@@ -368,6 +389,9 @@ async def process_image_message(message: types.Message, state: FSMContext):
     # Отправляем обработанное изображение обратно
         with open("output_image.jpg", "rb") as f:
             await message.reply_photo(f)
+
+        # Отслеживаем редактирование фото
+        await track_activity(message.from_user.id, "photo_edit")
 
         # Удаляем временные файлы
         os.remove("input_image.jpg")
@@ -900,36 +924,375 @@ async def show_game_top(mess: types.Message):
     except Exception as e:
         await err('die', mess, e)
 
+@dp.message_handler(commands=['profile'])
+async def show_profile(mess: types.Message):
+    """Показать полный профиль пользователя"""
+    await check(mess)
+    try:
+        await bd.create_achievements_tables()
+        
+        profile = await bd.get_user_profile(mess.from_user.id)
+        if not profile:
+            await bot.send_message(mess.chat.id, "Не удалось загрузить ваш профиль. Попробуйте позже.")
+            return
+        
+        user_info = profile['user_info']
+        user_stats = profile['user_stats']
+        game_stats = profile['game_stats']
+        achievements = profile['achievements']
+        
+        name = user_info[0] if user_info else f"Пользователь {mess.from_user.id}"
+        
+        # Формируем профиль
+        profile_text = f"👤 *Профиль {name}*\n\n"
+        
+        if user_stats:
+            # Проверяем ночные сообщения
+            from datetime import datetime
+            current_hour = datetime.now().hour
+            is_night = 23 <= current_hour or current_hour <= 6
+            
+            profile_text += f"📊 *Статистика активности:*\n"
+            profile_text += f"💬 Всего сообщений: {user_stats[1]}\n"
+            profile_text += f"👥 В группах: {user_stats[2]}\n"
+            profile_text += f"🦉 Ночных: {user_stats[3]}\n"
+            profile_text += f"📝 Самое длинное: {user_stats[4]} символов\n"
+            profile_text += f"😈 Замечаний за мат: {user_stats[5]}\n"
+            profile_text += f"⚡ Команд использовано: {user_stats[6]}\n"
+            profile_text += f"😂 Мемов запрошено: {user_stats[7]}\n"
+            profile_text += f"🎨 Фото отредактировано: {user_stats[8]}\n"
+            profile_text += f"📅 Активных дней: {user_stats[11]}\n"
+            
+            # Отслеживаем активность просмотра профиля
+            await track_activity(mess.from_user.id, "command", 1, 
+                               mess.chat.type in ['group', 'supergroup'], is_night)
+        else:
+            profile_text += "📊 Статистика активности пока не собирается.\n"
+        
+        if game_stats:
+            total_games = game_stats[1] + game_stats[2]
+            win_rate = (game_stats[1] / total_games * 100) if total_games > 0 else 0
+            
+            profile_text += f"\n🎮 *Игровая статистика:*\n"
+            profile_text += f"🏆 Всего игр: {total_games}\n"
+            profile_text += f"✅ Угадано: {game_stats[1]}\n"
+            profile_text += f"❌ Не доиграно: {game_stats[2]}\n"
+            profile_text += f"📈 Процент побед: {win_rate:.1f}%\n"
+            
+            if user_stats:
+                profile_text += f"🔥 Лучшая серия: {user_stats[13]} побед\n"
+                profile_text += f"⚡ Текущая серия: {user_stats[12]} побед\n"
+        else:
+            profile_text += f"\n🎮 *Игровая статистика:*\nЕще не играли в '5 букв'\n"
+        
+        # Последние достижения
+        if achievements:
+            profile_text += f"\n🏅 *Последние достижения:*\n"
+            for achievement_id, earned_date in achievements[:3]:
+                achievement = bd.ACHIEVEMENTS.get(achievement_id)
+                if achievement:
+                    profile_text += f"{achievement['icon']} {achievement['name']}\n"
+            
+            if len(achievements) > 3:
+                profile_text += f"... и еще {len(achievements) - 3} достижений\n"
+            
+            total_achievements = len(bd.get_achievements())
+            profile_text += f"\nВсего достижений: {len(achievements)}/{total_achievements}\n"
+        else:
+            profile_text += f"\n🏅 *Достижения:* Пока нет\n"
+        
+        profile_text += f"\n💡 Используйте /achievements для просмотра всех достижений"
+        
+        await bot.send_message(mess.chat.id, profile_text, parse_mode="Markdown")
+        
+    except Exception as e:
+        await err('die', mess, e)
+
+@dp.message_handler(commands=['achievements'])
+async def show_achievements(mess: types.Message):
+    """Показать все достижения пользователя"""
+    await check(mess)
+    try:
+        await bd.create_achievements_tables()
+        
+        achievements = await bd.get_user_achievements(mess.from_user.id)
+        name = await bd.give_user_name(mess.from_user.id)
+        
+        # Отслеживаем активность
+        from datetime import datetime
+        current_hour = datetime.now().hour
+        is_night = 23 <= current_hour or current_hour <= 6
+        await track_activity(mess.from_user.id, "command", 1, 
+                           mess.chat.type in ['group', 'supergroup'], is_night)
+        
+        achievements_text = f"🏆 *Достижения {name}*\n\n"
+        
+        if achievements:
+            earned_ids = {achievement[0] for achievement in achievements}
+            
+            # Получаем достижения, сгруппированные по категориям
+            categories = bd.get_achievements_by_category()
+            all_achievements = bd.get_achievements()
+            
+            for category, achievement_ids in categories.items():
+                achievements_text += f"*{category}:*\n"
+                category_has_achievements = False
+                
+                for achievement_id in achievement_ids:
+                    achievement = all_achievements.get(achievement_id)
+                    if achievement:
+                        if achievement_id in earned_ids:
+                            achievement_text = f"✅ {achievement['icon']} {achievement['name']}"
+                            # Находим дату получения
+                            for ach_id, date in achievements:
+                                if ach_id == achievement_id:
+                                    achievement_text += f" _{date[:10]}_"
+                                    break
+                            achievements_text += f"{achievement_text}\n"
+                            category_has_achievements = True
+                        else:
+                            achievements_text += f"⬜ {achievement['icon']} {achievement['name']} _{achievement['desc']}_\n"
+                
+                if not category_has_achievements:
+                    achievements_text += "_Пока нет достижений в этой категории_\n"
+                
+                achievements_text += "\n"
+            
+            total_achievements = len(all_achievements)
+            progress = f"{len(achievements)}/{total_achievements}"
+            achievements_text += f"📊 *Прогресс:* {progress} ({len(achievements)/total_achievements*100:.1f}%)"
+            
+        else:
+            achievements_text += "У вас пока нет достижений.\n\n"
+            achievements_text += "🎯 *Получите первое достижение:*\n"
+            achievements_text += "💬 Напишите 100 сообщений - получите *'Болтун'*\n"
+            achievements_text += "🎮 Сыграйте в игру /playfive - получите *'Новичок'*\n"
+            achievements_text += "😂 Попросите мем - начните путь к *'Мем-мастер'*"
+        
+        await bot.send_message(mess.chat.id, achievements_text, parse_mode="Markdown")
+        
+    except Exception as e:
+        await err('die', mess, e)
+
 @dp.message_handler()
 async def echo(mess: types.Message):
+    # Отслеживаем активность для всех сообщений
+    from datetime import datetime
+    current_hour = datetime.now().hour
+    is_night = 23 <= current_hour or current_hour <= 6
+    is_group = mess.chat.type in ['group', 'supergroup']
+    message_length = len(mess.text) if mess.text else 0
+    
     if any(item in mess.text.lower() for item in ['хуй', 'хер', 'блядь', 'fuck', 'shit', 'dick']):
         try:
             name = await bd.give_user_name(mess.from_user.id)
         except:
             name = 'дорогуша'
+        
+        # Отслеживаем сообщение и серьезное предупреждение за мат
+        await track_activity(mess.from_user.id, "message", message_length, is_group, is_night)
+        await track_activity(mess.from_user.id, "profanity")
+        
         await bot.send_message(mess.chat.id, f'Фу, {name}, как тебе не стыдно!', reply_to_message_id=mess.message_id)
+        
     elif any(item in mess.text.lower() for item in ['блин', 'бля', 'блять', 'пизд']):
         try:
             name = await bd.give_user_name(mess.from_user.id)
         except:
             name = 'дорогуша'
+        
+        # Отслеживаем сообщение и легкое предупреждение за мат
+        await track_activity(mess.from_user.id, "message", message_length, is_group, is_night)
+        await track_activity(mess.from_user.id, "profanity")
+        
         await bot.send_message(mess.chat.id, f'Не выражайся, {name}!', reply_to_message_id=mess.message_id)
+        
     elif 'сук' in mess.text.lower():
         try:
             name = await bd.give_user_name(mess.from_user.id)
         except:
             name = 'дорогуша'
+        
+        # Отслеживаем сообщение и предупреждение
+        await track_activity(mess.from_user.id, "message", message_length, is_group, is_night)
+        await track_activity(mess.from_user.id, "profanity")
+        
         await bot.send_message(mess.chat.id, f'Не переживай так сильно, {name}!', reply_to_message_id=mess.message_id)
+        
     elif 'спасибо' in mess.text.lower():
         try:
             name = await bd.give_user_name(mess.from_user.id)
         except:
             name = "дорогуша"
+        
+        # Отслеживаем вежливое сообщение
+        await track_activity(mess.from_user.id, "message", message_length, is_group, is_night)
+        
         await bot.send_message(mess.chat.id, f'Пожалуйста, {name}!', reply_to_message_id=mess.message_id)
+        
     elif "мем" in mess.text.lower():
+        # Отслеживаем сообщение и запрос мема
+        await track_activity(mess.from_user.id, "message", message_length, is_group, is_night)
+        await track_activity(mess.from_user.id, "meme")
         await mem(mess)
+        
     else:
+        # Отслеживаем обычное сообщение
+        await track_activity(mess.from_user.id, "message", message_length, is_group, is_night)
         await err('wtf', mess)
+
+@dp.message_handler(commands=['addachievement'])
+async def add_achievement_command(mess: types.Message):
+    """Добавить новое достижение (только для админа)"""
+    await check(mess)
+    try:
+        if mess.from_user.id != 339512152:  # Только для админа
+            await bot.send_message(mess.chat.id, "❌ Эта команда доступна только администратору")
+            return
+        
+        # Показываем справку по использованию команды
+        help_text = """🔧 *Добавление нового достижения*
+
+Формат команды:
+`/addachievement ID|Название|Описание|Эмодзи|Категория|Порог|Статистика`
+
+*Параметры:*
+• ID - уникальный идентификатор (например: super_user_1)
+• Название - название достижения
+• Описание - подробное описание
+• Эмодзи - иконка достижения
+• Категория - communication/gaming/behavior/group
+• Порог - число для достижения
+• Статистика - поле статистики (total_messages, games_played и т.д.)
+
+*Пример:*
+`/addachievement super_user_1|Супер пользователь|Отправить 10000 сообщений|⭐|communication|10000|total_messages`
+
+*Доступные категории:*
+• communication - За общение
+• gaming - За игры  
+• behavior - За поведение
+• group - Групповые
+
+*Доступные поля статистики:*
+• total_messages, group_messages, night_messages
+• profanity_warnings, commands_used, memes_requested
+• photos_edited, active_days, max_win_streak
+• games_played, games_quit, win_rate_percentage"""
+        
+        await bot.send_message(mess.chat.id, help_text, parse_mode="Markdown")
+        
+    except Exception as e:
+        await err('die', mess, e)
+
+@dp.message_handler(lambda message: message.text and message.text.startswith('/addachievement '))
+async def process_add_achievement(mess: types.Message):
+    """Обработать добавление достижения"""
+    await check(mess)
+    try:
+        if mess.from_user.id != 339512152:  # Только для админа
+            return
+        
+        # Парсим параметры
+        command_text = mess.text[len('/addachievement '):]
+        params = command_text.split('|')
+        
+        if len(params) != 7:
+            await bot.send_message(mess.chat.id, "❌ Неверное количество параметров. Используйте /addachievement для справки.")
+            return
+        
+        achievement_id, name, description, icon, category, threshold_str, stat = [p.strip() for p in params]
+        
+        try:
+            threshold = int(threshold_str)
+        except ValueError:
+            await bot.send_message(mess.chat.id, "❌ Порог должен быть числом")
+            return
+        
+        # Проверяем корректность категории
+        valid_categories = ['communication', 'gaming', 'behavior', 'group']
+        if category not in valid_categories:
+            await bot.send_message(mess.chat.id, f"❌ Неверная категория. Доступные: {', '.join(valid_categories)}")
+            return
+        
+        # Добавляем достижение
+        success = bd.add_achievement(achievement_id, name, description, icon, category, threshold, stat)
+        
+        if success:
+            await bot.send_message(mess.chat.id, f"✅ Достижение '{name}' успешно добавлено!\n\n{icon} *{name}*\n_{description}_\nПорог: {threshold} ({stat})", parse_mode="Markdown")
+            await log.add(f": Admin {mess.from_user.id} added achievement {achievement_id}")
+        else:
+            await bot.send_message(mess.chat.id, "❌ Ошибка при добавлении достижения")
+        
+    except Exception as e:
+        await err('die', mess, e)
+
+@dp.message_handler(commands=['listachievements'])
+async def list_achievements_command(mess: types.Message):
+    """Показать все достижения из конфигурации (только для админа)"""
+    await check(mess)
+    try:
+        if mess.from_user.id != 339512152:  # Только для админа
+            await bot.send_message(mess.chat.id, "❌ Эта команда доступна только администратору")
+            return
+        
+        config = bd.load_achievements_config()
+        achievements = config.get('achievements', {})
+        
+        if not achievements:
+            await bot.send_message(mess.chat.id, "📝 Список достижений пуст")
+            return
+        
+        text = "📋 *Все достижения в конфигурации:*\n\n"
+        
+        # Группируем по категориям
+        categories = bd.get_achievements_by_category()
+        
+        for category_name, achievement_ids in categories.items():
+            text += f"*{category_name}:*\n"
+            for achievement_id in achievement_ids:
+                achievement = achievements.get(achievement_id, {})
+                enabled = "✅" if achievement.get('enabled', True) else "❌"
+                text += f"{enabled} `{achievement_id}` - {achievement.get('icon', '')} {achievement.get('name', '')}\n"
+            text += "\n"
+        
+        await bot.send_message(mess.chat.id, text, parse_mode="Markdown")
+        
+    except Exception as e:
+        await err('die', mess, e)
+
+# ===== СИСТЕМА ДОСТИЖЕНИЙ =====
+
+async def notify_achievements(user_id, new_achievements):
+    """Уведомить пользователя о новых достижениях"""
+    if not new_achievements:
+        return
+    
+    achievements_config = bd.get_achievements()
+    for achievement_id in new_achievements:
+        achievement = achievements_config.get(achievement_id)
+        if achievement:
+            achievement_text = f"🎉 *Новое достижение!*\n\n{achievement['icon']} *{achievement['name']}*\n_{achievement['desc']}_"
+            try:
+                await bot.send_message(user_id, achievement_text, parse_mode="Markdown")
+            except Exception as e:
+                await log.add(f": Error sending achievement notification to {user_id}: {e}")
+
+async def track_activity(user_id, activity_type, value=1, is_group=False, is_night=False):
+    """Отследить активность пользователя и проверить достижения"""
+    try:
+        # Инициализируем таблицы достижений если их нет
+        await bd.create_achievements_tables()
+        
+        # Обновляем статистику и получаем новые достижения
+        new_achievements = await bd.update_user_activity(user_id, activity_type, value, is_group, is_night)
+        
+        # Уведомляем о новых достижениях
+        if new_achievements:
+            await notify_achievements(user_id, new_achievements)
+            
+    except Exception as e:
+        await log.add(f": Error tracking activity for {user_id}: {e}")
 
 async def err(v, mess=None, err=None):
     if v == 'err':
