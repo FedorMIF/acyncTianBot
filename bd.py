@@ -208,3 +208,179 @@ async def get_list_users(var):
         await log.add(f": The error '{e}' occur")
     await connection.close()
     return list_users_new
+
+async def create_game_stats_table():
+    """Создание таблицы статистики игр"""
+    connection = await create_connection(path_to_bd)
+    cur = await connection.cursor()
+    try:
+        await cur.execute("""
+            CREATE TABLE IF NOT EXISTS game_stats (
+                user_id INTEGER PRIMARY KEY,
+                total_games_played INTEGER DEFAULT 0,
+                total_games_quit INTEGER DEFAULT 0,
+                first_game_date TEXT,
+                monthly_games_played INTEGER DEFAULT 0,
+                monthly_games_quit INTEGER DEFAULT 0,
+                monthly_reset_date TEXT,
+                FOREIGN KEY (user_id) REFERENCES users (id)
+            )
+        """)
+        await connection.commit()
+        await log.add(": Created game_stats table successfully")
+    except Error as e:
+        await log.add(f": The error creating game_stats table '{e}' occur")
+    await connection.close()
+
+async def get_or_create_game_stats(user_id):
+    """Получить или создать статистику игрока"""
+    from datetime import datetime
+    
+    connection = await create_connection(path_to_bd)
+    cur = await connection.cursor()
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    
+    try:
+        # Проверяем существует ли запись
+        await cur.execute("SELECT * FROM game_stats WHERE user_id = ?", (user_id,))
+        stats = await cur.fetchone()
+        
+        if not stats:
+            # Создаем новую запись
+            await cur.execute("""
+                INSERT INTO game_stats 
+                (user_id, first_game_date, monthly_reset_date) 
+                VALUES (?, ?, ?)
+            """, (user_id, current_date, current_date))
+            await connection.commit()
+            
+            # Получаем созданную запись
+            await cur.execute("SELECT * FROM game_stats WHERE user_id = ?", (user_id,))
+            stats = await cur.fetchone()
+        
+        await connection.close()
+        return stats
+    except Error as e:
+        await connection.close()
+        await log.add(f": The error get_or_create_game_stats '{e}' occur")
+        return None
+
+async def update_game_stats(user_id, is_completed):
+    """Обновить статистику игрока"""
+    from datetime import datetime
+    
+    connection = await create_connection(path_to_bd)
+    cur = await connection.cursor()
+    current_date = datetime.now()
+    current_month = current_date.strftime('%Y-%m')
+    
+    try:
+        # Получаем текущую статистику
+        stats = await get_or_create_game_stats(user_id)
+        if not stats:
+            await connection.close()
+            return False
+        
+        # Проверяем нужно ли сбросить месячные счетчики
+        monthly_reset_date = datetime.strptime(stats[6], '%Y-%m-%d') if stats[6] else current_date
+        stats_month = monthly_reset_date.strftime('%Y-%m')
+        
+        if current_month != stats_month:
+            # Сбрасываем месячные счетчики
+            await cur.execute("""
+                UPDATE game_stats 
+                SET monthly_games_played = 0, 
+                    monthly_games_quit = 0, 
+                    monthly_reset_date = ?
+                WHERE user_id = ?
+            """, (current_date.strftime('%Y-%m-%d'), user_id))
+        
+        # Обновляем статистику
+        if is_completed:
+            await cur.execute("""
+                UPDATE game_stats 
+                SET total_games_played = total_games_played + 1,
+                    monthly_games_played = monthly_games_played + 1
+                WHERE user_id = ?
+            """, (user_id,))
+        else:
+            await cur.execute("""
+                UPDATE game_stats 
+                SET total_games_quit = total_games_quit + 1,
+                    monthly_games_quit = monthly_games_quit + 1
+                WHERE user_id = ?
+            """, (user_id,))
+        
+        await connection.commit()
+        await connection.close()
+        return True
+    except Error as e:
+        await connection.close()
+        await log.add(f": The error update_game_stats '{e}' occur")
+        return False
+
+async def get_user_game_stats(user_id):
+    """Получить статистику конкретного игрока"""
+    from datetime import datetime
+    
+    connection = await create_connection(path_to_bd)
+    cur = await connection.cursor()
+    
+    try:
+        await cur.execute("SELECT * FROM game_stats WHERE user_id = ?", (user_id,))
+        stats = await cur.fetchone()
+        
+        if stats:
+            # Проверяем актуальность месячной статистики
+            current_month = datetime.now().strftime('%Y-%m')
+            reset_date = datetime.strptime(stats[6], '%Y-%m-%d') if stats[6] else datetime.now()
+            stats_month = reset_date.strftime('%Y-%m')
+            
+            if current_month != stats_month:
+                # Сбрасываем месячные счетчики
+                await cur.execute("""
+                    UPDATE game_stats 
+                    SET monthly_games_played = 0, 
+                        monthly_games_quit = 0, 
+                        monthly_reset_date = ?
+                    WHERE user_id = ?
+                """, (datetime.now().strftime('%Y-%m-%d'), user_id))
+                await connection.commit()
+                
+                # Получаем обновленную статистику
+                await cur.execute("SELECT * FROM game_stats WHERE user_id = ?", (user_id,))
+                stats = await cur.fetchone()
+        
+        await connection.close()
+        return stats
+    except Error as e:
+        await connection.close()
+        await log.add(f": The error get_user_game_stats '{e}' occur")
+        return None
+
+async def get_group_members_stats(group_id):
+    """Получить статистику всех участников группы"""
+    connection = await create_connection(path_to_bd)
+    cur = await connection.cursor()
+    
+    try:
+        # Получаем список всех пользователей которые есть в базе
+        await cur.execute("""
+            SELECT u.id, u.name, 
+                   COALESCE(gs.total_games_played, 0) as total_played,
+                   COALESCE(gs.total_games_quit, 0) as total_quit,
+                   COALESCE(gs.monthly_games_played, 0) as monthly_played,
+                   COALESCE(gs.monthly_games_quit, 0) as monthly_quit
+            FROM users u
+            LEFT JOIN game_stats gs ON u.id = gs.user_id
+            WHERE u.id > 0
+            ORDER BY total_played DESC, monthly_played DESC
+        """)
+        
+        results = await cur.fetchall()
+        await connection.close()
+        return results
+    except Error as e:
+        await connection.close()
+        await log.add(f": The error get_group_members_stats '{e}' occur")
+        return []

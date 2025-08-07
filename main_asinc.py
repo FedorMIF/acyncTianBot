@@ -14,8 +14,9 @@ import log
 import fiveword
 import img_from_site
 import piccor as pc
+import key
 
-bot = Bot('1661866696:AAFi8P_OLIstQ2RGmoZFBkXVSZivYMoJIzk')  # основа
+bot = Bot(key.key)  # основа
 #bot = Bot('5207851764:AAGIWwh7EX5t-nJX6xjoT41vuaRH-gkw-Lg')  # тест бот
 
 addToSell = -1002109739402
@@ -38,7 +39,8 @@ menu1.row(row_bt)
 list_commands = ['- Напиши "привет", для того что бы познакомиться', '- /help - Список всех комманд',
                  #'- /addnote - добавить заметку', '- /showallnotes - посмотреть все текущие заметки',
                  #'- /dellnote - удалить заметку', '- /menu - открыть меню', 
-                 '-/playfive - игра 5 букв', '- /sendmailtoandmin - отправить сообщение админу', '- Попроси "мем" для расслабона и чилла',
+                 '-/playfive - игра 5 букв', '- /mystats - моя статистика в игре 5 букв', '- /gametop - топ игроков в чате',
+                 '- /sendmailtoandmin - отправить сообщение админу', '- Попроси "мем" для расслабона и чилла',
                  '-/cormypic - мини фотошоп (beta)',
                  #'- напиши "Поздравление" если хочешь получить новогоднюю картинку'
                  ]
@@ -47,7 +49,8 @@ list_commands_adm = [ '- /help - Список всех комманд',
                      #'- /dellnote - удалить заметку', 
                      '- /showusersname - посомтреть всех юзеров с их id',
                      '- /sendmess - отослать всем сообщение', '- /sendmesstouser - отдельному челу',
-                     '- /getlog - получить логфайл', '- Попроси "мем" для расслабона и чилла', '- /tospecial - бро/кис'
+                     '- /getlog - получить логфайл', '- /mystats - моя статистика в игре 5 букв', '- /gametop - топ игроков',
+                     '- Попроси "мем" для расслабона и чилла', '- /tospecial - бро/кис'
                     #'- напиши "Поздравление" если хочешь получить новогоднюю картинку'
                     ]
 what_yn_com = 0
@@ -137,6 +140,9 @@ async def help(mess: types.Message):
 async def send_hi(mess: types.Message, state: FSMContext):
     await check(mess)
     try:
+        # Инициализируем таблицу статистики если её нет
+        await bd.create_game_stats_table()
+        
         async with state.proxy() as data:
             data['word'] = await fiveword.genword()
         await bot.send_message(mess.chat.id, f"Давай поиграем в игру _5 Букв_\n"
@@ -155,13 +161,14 @@ async def send_hi(mess: types.Message, state: FSMContext):
 @dp.message_handler(state=GameStates.waiting_for_word, content_types=types.ContentTypes.TEXT)
 async def compration_word(mess: types.Message, state: FSMContext):
     try:
-
         async with state.proxy() as data:
             word = data['word'].lower()
 
         userword = mess.text.lower()
 
         if userword == 'стоп':
+            # Записываем статистику как незавершенную игру
+            await bd.update_game_stats(mess.from_user.id, is_completed=False)
             await bot.send_message(mess.chat.id, f'Жаль, что не доиграли, слово было: {word}')
             await state.finish()
 
@@ -190,6 +197,8 @@ async def compration_word(mess: types.Message, state: FSMContext):
                                                          f'Неправильная позиця: _{",".join(li)}_',
                                            parse_mode="Markdown")
             else:
+                # Записываем статистику как завершенную игру
+                await bd.update_game_stats(mess.from_user.id, is_completed=True)
                 await bot.send_message(mess.chat.id, f'Молодец, это было слово: {word}')
                 await state.finish()
 
@@ -386,7 +395,7 @@ async def show_names(mess: types.Message):
                 names += user_name + '\n'
             await bot.send_message(mess.chat.id, names)
         else:
-            await bot.send_message(mess.chat.id, 'Не твоего поля ягодка, дорогуша. Стань адином, а потом поговорим')
+            await bot.send_message(mess.chat.id, 'Не твоего поля ягодка, дорогуша. Стань админом, а потом поговорим')
 
     except Exception as e:
         await err('die', mess, e)
@@ -398,7 +407,7 @@ async def send_mess(mess: types.Message, state: FSMContext):
             await bot.send_message(mess.chat.id, 'Хозяин, что вы хотите отправить всем нашим рабам?')
             await SendMessToAllUsers.text.set()
         else:
-            await bot.send_message(mess.chat.id, 'Не твоего поля ягодка, дорогуша. Стань адином, а потом поговорим')
+            await bot.send_message(mess.chat.id, 'Не твоего поля ягодка, дорогуша. Стань админом, а потом поговорим')
 
     except Exception as e:
         await state.finish()
@@ -443,7 +452,7 @@ async def send_mess_to_user(mess: types.Message, state: FSMContext):
             await bot.send_message(mess.chat.id, 'Напиши id')
             await SendMessToUser.user_id.set()
         else:
-            await bot.send_message(mess.chat.id, 'Не твоего поля ягодка, дорогуша. Стань адином, а потом поговорим')
+            await bot.send_message(mess.chat.id, 'Не твоего поля ягодка, дорогуша. Стань админом, а потом поговорим')
 
     except Exception as e:
         await state.finish()
@@ -463,7 +472,7 @@ async def get_id_for_mess(mess: types.Message, state: FSMContext):
 @dp.message_handler(state=SendMessToUser.text, content_types=types.ContentTypes.TEXT)
 async def get_text2_for_mess(mess: types.Message, state: FSMContext):
     try:
-        await bot.send_message(mess.chat.id, 'Хозяин, вы точно хотите это отвправить?')
+        await bot.send_message(mess.chat.id, 'Хозяин, вы точно хотите это отправить?')
         await state.update_data(text=mess.text)
         await SendMessToUser.confing.set()
 
@@ -479,7 +488,7 @@ async def send_mess2_to_all(mess: types.Message, state: FSMContext):
         if mess.text.lower() == "да":
             await bot.send_message(int(user_data['user_id']), str(user_data['text']))
         else:
-            await bot.send_message(mess.chat.id, f'Хорошо, это останеться между нами)')
+            await bot.send_message(mess.chat.id, f'Хорошо, это останется между нами)')
         
 
         await state.finish()
@@ -494,7 +503,7 @@ async def send_log_file(mess: types.Message):
         if mess.from_user.id == 339512152:
             await bot.send_document(mess.chat.id, await log.get_file())
         else:
-            await bot.send_message(mess.chat.id, 'Не твоего поля ягодка, дорогуша. Стань адином, а потом поговорим')
+            await bot.send_message(mess.chat.id, 'Не твоего поля ягодка, дорогуша. Стань админом, а потом поговорим')
 
     except Exception as e:
         await err('die', mess, e)
@@ -757,6 +766,139 @@ async def process_callback(query: types.CallbackQuery, state: FSMContext):
     except Exception as e:
         await state.finish()
         await err('die', answers["queryMid"], e)
+
+@dp.message_handler(commands=['mystats'])
+async def show_my_stats(mess: types.Message):
+    """Показать мою статистику в игре 5 букв"""
+    await check(mess)
+    try:
+        await bd.create_game_stats_table()
+        stats = await bd.get_user_game_stats(mess.from_user.id)
+        name = await bd.give_user_name(mess.from_user.id)
+        
+        if not stats:
+            await bot.send_message(mess.chat.id, f'{name}, ты еще не играл в игру "5 букв"! Попробуй команду /playfive')
+            return
+        
+        total_games = stats[1] + stats[2]  # всего игр
+        total_success_rate = (stats[1] / total_games * 100) if total_games > 0 else 0
+        
+        monthly_games = stats[4] + stats[5]  # игр за месяц
+        monthly_success_rate = (stats[4] / monthly_games * 100) if monthly_games > 0 else 0
+        
+        stats_text = f"""📊 *Статистика игрока {name}*
+
+🎯 *За все время:*
+• Всего игр: {total_games}
+• Угадано: {stats[1]}
+• Не доиграно: {stats[2]}
+• Процент успеха: {total_success_rate:.1f}%
+
+📅 *За текущий месяц:*
+• Всего игр: {monthly_games}
+• Угадано: {stats[4]}
+• Не доиграно: {stats[5]}
+• Процент успеха: {monthly_success_rate:.1f}%
+
+🗓 Первая игра: {stats[3]}"""
+        
+        await bot.send_message(mess.chat.id, stats_text, parse_mode="Markdown")
+        
+    except Exception as e:
+        await err('die', mess, e)
+
+@dp.message_handler(commands=['gametop'])
+async def show_game_top(mess: types.Message):
+    """Показать топ игроков в группе"""
+    await check(mess)
+    try:
+        await bd.create_game_stats_table()
+        
+        # Проверяем является ли это групповым чатом
+        if mess.chat.type in ['group', 'supergroup']:
+            # Получаем статистику всех игроков
+            all_stats = await bd.get_group_members_stats(mess.chat.id)
+            
+            if not all_stats:
+                await bot.send_message(mess.chat.id, f"Пока никто не играл в игру '5 букв'!\nНачните играть командой /playfive")
+                return
+            
+            # Фильтруем только участников этой группы и тех, кто играл
+            group_playing_stats = []
+            for stat in all_stats:
+                user_id = stat[0]
+                total_games = stat[2] + stat[3]
+                
+                # Проверяем только тех, кто хотя бы раз играл
+                if total_games > 0:
+                    try:
+                        # Проверяем является ли пользователь участником этой группы
+                        member = await bot.get_chat_member(mess.chat.id, user_id)
+                        # Участник группы если статус не 'left' и не 'kicked'
+                        if member.status not in ['left', 'kicked']:
+                            group_playing_stats.append(stat)
+                    except Exception as e:
+                        # Если не удалось проверить пользователя, пропускаем его
+                        await log.add(f": Error checking user {user_id} in chat {mess.chat.id}: {e}")
+                        continue
+            
+            if not group_playing_stats:
+                await bot.send_message(mess.chat.id, f"Пока никто из участников чата '{mess.chat.title}' не играл в игру '5 букв'!\nНачните играть командой /playfive")
+                return
+            
+            # Формируем топ-лист
+            top_text = f"🏆 *Топ игроков в игру '5 букв'*\nВ чате: {mess.chat.title}\n\n"
+            
+            for i, stat in enumerate(group_playing_stats[:10], 1):
+                name = stat[1] if stat[1] else f"Игрок {stat[0]}"
+                won = stat[2]
+                total = stat[2] + stat[3]
+                rate = (won / total * 100) if total > 0 else 0
+                monthly_won = stat[4]
+                monthly_quit = stat[5]
+                
+                emoji = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"{i}."
+                top_text += f"{emoji} *{name}*\n"
+                top_text += f"   За все время: {won} из {total} ({rate:.1f}%)\n"
+                top_text += f"   За месяц: {monthly_won} угадано, {monthly_quit} прекращено\n\n"
+            
+            if len(group_playing_stats) > 10:
+                top_text += f"... и еще {len(group_playing_stats) - 10} игроков"
+            
+        else:
+            # Если это личная переписка, показываем общий топ
+            all_stats = await bd.get_group_members_stats(0)
+            
+            if not all_stats:
+                await bot.send_message(mess.chat.id, "Пока никто не играл в игру '5 букв'!\nНачните играть командой /playfive")
+                return
+            
+            # Фильтруем только тех, кто хотя бы раз играл
+            playing_stats = [stat for stat in all_stats if (stat[2] + stat[3]) > 0]
+            
+            if not playing_stats:
+                await bot.send_message(mess.chat.id, "Пока никто не играл в игру '5 букв'!\nНачните играть командой /playfive")
+                return
+            
+            top_text = f"🏆 *Общий топ игроков в игру '5 букв'*\n\n"
+            
+            for i, stat in enumerate(playing_stats[:10], 1):
+                name = stat[1] if stat[1] else f"Игрок {stat[0]}"
+                won = stat[2]
+                total = stat[2] + stat[3]
+                rate = (won / total * 100) if total > 0 else 0
+                monthly_won = stat[4]
+                monthly_quit = stat[5]
+                
+                emoji = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"{i}."
+                top_text += f"{emoji} *{name}*\n"
+                top_text += f"   За все время: {won} из {total} ({rate:.1f}%)\n"
+                top_text += f"   За месяц: {monthly_won} угадано, {monthly_quit} прекращено\n\n"
+        
+        await bot.send_message(mess.chat.id, top_text, parse_mode="Markdown")
+        
+    except Exception as e:
+        await err('die', mess, e)
 
 @dp.message_handler()
 async def echo(mess: types.Message):
