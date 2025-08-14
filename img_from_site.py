@@ -5,10 +5,36 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import asyncio
 
-async def fetch_html(url):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            return await response.text()
+async def fetch_html(url, headers=None, retries=3, timeout=15):
+	default_headers = {
+		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+		'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+		'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+		'Referer': 'https://www.google.com/',
+		'Cache-Control': 'no-cache',
+		'Pragma': 'no-cache'
+	}
+	if headers:
+		default_headers.update(headers)
+
+	timeout_cfg = aiohttp.ClientTimeout(total=timeout)
+
+	for attempt in range(retries):
+		try:
+			async with aiohttp.ClientSession(headers=default_headers, timeout=timeout_cfg) as session:
+				async with session.get(url, allow_redirects=True) as response:
+					if response.status == 200:
+						return await response.text()
+					if response.status in (429, 503):
+						await asyncio.sleep(1.5 * (attempt + 1))
+						continue
+					response.raise_for_status()
+		except aiohttp.ClientError:
+			if attempt == retries - 1:
+				raise
+			await asyncio.sleep(1.5 * (attempt + 1))
+
+	return ""
 
 async def get_taro():
     """Parse images from a given URL."""
@@ -29,59 +55,68 @@ async def get_taro():
     return random.choice(images) 
 
 async def find_image_links(url):
-    html_content = await fetch_html(url)
-    soup = BeautifulSoup(html_content, 'html.parser')
-    img_links = [img['src'] for img in soup.find_all('img', src=True) if ('logo' not in img['src']) and ('gb' not in img['src']) and (".jpg" in img['src'])]
-    if url == "https://topmemas.top":
-        img_links = [url+f"/{im}" for im in img_links]
-    elif "https://ru.pinterest.com" in url:
-        img_links = [im for im in img_links if "75x75_RS" not in im]
-    return img_links
+	img_links = []
+	html_content = await fetch_html(url)
+	if "https://www.memify.ru/highfive" in url:
+		soup = BeautifulSoup(html_content, 'html.parser')
+		meme_list_div = soup.find("div", class_="meme-list infinite-container")
+		if meme_list_div:
+			infinite_items = meme_list_div.find_all("div", class_="infinite-item card")
+			for item in infinite_items:
+				img_tag = item.find("img", src=True)
+				if img_tag:
+					img_links.append(img_tag['src'])
+		#print(img_links)
+		return img_links
+	
+	soup = BeautifulSoup(html_content, 'html.parser')
+	img_links = [img['src'] for img in soup.find_all('img', src=True) if ('logo' not in img['src']) and ('gb' not in img['src']) and (".jpg" in img['src'])]
+	if url == "https://topmemas.top":
+		img_links = [url+f"/{im}" for im in img_links]
+	elif "https://ru.pinterest.com" in url:
+		img_links = [im for im in img_links if "75x75_RS" not in im]
+
+	return img_links
 
 async def get_NY_pic():
-    async with aiohttp.ClientSession() as s:
-        s.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0'})
+	headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0'}
+	async with aiohttp.ClientSession(headers=headers) as s:
+		sites = ["https://otkritkiok.ru/prazdniki/noviy-god"] # , 'https://topmemas.top/', "https://www.memify.ru/"]
+			
+		site = random.choice(sites)
 
-    sites = ["https://otkritkiok.ru/prazdniki/noviy-god"] # , 'https://topmemas.top/', "https://www.memify.ru/"]
-        
-    site = random.choice(sites)
+		async with s.get(site) as response:
+			html = await response.text()
+		
+		soup = BeautifulSoup(html, 'lxml')
 
-    async with s.get(site) as response:
-        html = await response.text()
-    
-    soup = BeautifulSoup(html, 'lxml')
+		file = open('http.txt', 'w+')
+		file.write(str(soup))
+		# file.write(str(text)+' \n '+str(img_new))
+		file.close()
 
-    
-    file = open('http.txt', 'w+')
-    file.write(str(soup))
-    # file.write(str(text)+' \n '+str(img_new))
-    file.close()
+		img_new = []
 
-    img_new = []
+		if site == "https://otkritkiok.ru/prazdniki/noviy-god":
+			img = re.findall(
+				r'src="https://cdn.otkritkiok.ru/posts/thumbs/\w+-\w+-\w+-\w+-\w+-\d+.\w+"',
+				str(soup))
+			for st in img:
+				st = re.sub(r'src="', '', st)
+				st = re.sub(r'"', '', st)
+				img_new.append(st)
 
-    if site == "https://otkritkiok.ru/prazdniki/noviy-god":
-        img = re.findall(
-            r'src="https://cdn.otkritkiok.ru/posts/thumbs/\w+-\w+-\w+-\w+-\w+-\d+.\w+"',
-            str(soup))
-        for st in img:
-            st = re.sub(r'src="', '', st)
-            st = re.sub(r'"', '', st)
-            img_new.append(st)
-
-
-    return img_new[random.randint(0, int(len(img_new)/2))]
+		return img_new[random.randint(0, int(len(img_new)/2))]
 
 async def get_pic():
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:69.0) Gecko/20100101 Firefox/69.0'}
-    sites = ['https://topmemas.top', "https://www.memify.ru", "https://vk.com/countryballs_re",
-             "https://ru.pinterest.com/eutagia/мемы-на-все-случаи-жизни", "https://pressa.tv/comics" ]
-             
-    async with aiohttp.ClientSession(headers=headers) as s:
-        #tasks = [await fetch_and_parse(s, site) for site in sites]
-        tasks = [await find_image_links(site) for site in sites]
-        img_new = [img for sublist in tasks for img in sublist]  # Flatten the list
-
-    return random.choice(img_new) #if img_new else None
+	sites = ['https://www.memify.ru/highfive']
+	#sites = ['https://topmemas.top', "https://www.memify.ru/highfive/", "https://vk.com/countryballs_re",
+	#         "https://ru.pinterest.com/eutagia/мемы-на-все-случаи-жизни", "https://pressa.tv/comics" ]
+	             
+	#tasks = [await fetch_and_parse(s, site) for site in sites]
+	tasks = [await find_image_links(site) for site in sites]
+	img_new = [img for sublist in tasks for img in sublist]  # Flatten the list
+	return random.choice(img_new) #if img_new else None
 
 async def fetch_and_parse(session, site):
     img_new = []

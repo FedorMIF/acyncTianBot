@@ -318,3 +318,125 @@
 07.08 - 13:47:35 : : Created achievements tables successfully
 07.08 - 13:47:35 : : Created achievements tables successfully
 07.08 - 13:47:46 : : Created game_stats table successfully
+07.08 - 13:49:07 : : Created achievements tables successfully
+07.08 - 13:52:43 : : Created achievements tables successfully
+07.08 - 13:54:05 : : Created achievements tables successfully
+07.08 - 13:54:05 : : Created achievements tables successfully
+07.08 - 13:54:05 : : Created achievements tables successfully
+07.08 - 14:30:40 : : Created game_stats table successfully
+07.08 - 14:32:09 : : Created achievements tables successfully
+07.08 - 14:32:26 : : Created game_stats table successfully
+07.08 - 14:34:17 : : Created achievements tables successfully
+07.08 - 14:34:17 : : Created achievements tables successfully
+07.08 - 14:35:15 : : Created game_stats table successfully
+07.08 - 14:38:33 : : Created achievements tables successfully
+07.08 - 14:38:43 : : Created game_stats table successfully
+07.08 - 14:40:35 : : Created achievements tables successfully
+07.08 - 14:40:39 : : Created game_stats table successfully
+07.08 - 14:41:57 : : Created achievements tables successfully
+07.08 - 14:42:05 : : Created game_stats table successfully
+07.08 - 14:43:51 : : Created achievements tables successfully
+07.08 - 14:44:05 : : Created achievements tables successfully
+07.08 - 14:44:05 : : Created achievements tables successfully
+07.08 - 14:44:18 : : The error give_user_notes 'no such table: groupe1001455012171' occur
+07.08 - 14:45:25 : : Created game_stats table successfully
+07.08 - 14:47:56 : : Created achievements tables successfully
+07.08 - 14:48:20 : : Created achievements tables successfully
+07.08 - 14:48:20 : : Created achievements tables successfully
+07.08 - 14:49:07 : : Created achievements tables successfully
+07.08 - 14:49:07 : : Created achievements tables successfully
+07.08 - 15:28:05 : : Created achievements tables successfully
+07.08 - 15:28:05 : : Created achievements tables successfully
+07.08 - 15:28:34 : : Created achievements tables successfully
+07.08 - 15:28:34 : : Created achievements tables successfully
+07.08 - 15:28:54 : : Created achievements tables successfully
+07.08 - 15:28:54 : : Created achievements tables successfully
+07.08 - 15:29:00 : : Created achievements tables successfully
+07.08 - 15:29:00 : : Created achievements tables successfully
+07.08 - 15:29:07 : : Created achievements tables successfully
+07.08 - 15:29:11 : : Created achievements tables successfully
+07.08 - 15:29:11 : : Created achievements tables successfully
+07.08 - 15:29:20 : : Created achievements tables successfully
+07.08 - 15:29:20 : : Created achievements tables successfully
+07.08 - 15:30:13 : : Created achievements tables successfully
+07.08 - 15:30:13 : : Created achievements tables successfully
+07.08 - 15:30:50 : : Created achievements tables successfully
+07.08 - 15:31:14 : : Created achievements tables successfully
+07.08 - 15:32:07 : : Created achievements tables successfully
+07.08 - 15:32:37 : : Created achievements tables successfully
+07.08 - 15:33:02 : : Created achievements tables successfully
+07.08 - 15:35:11 : : Created achievements tables successfully
+07.08 - 15:35:24 : : Created achievements tables successfully
+07.08 - 15:35:43 : : Created achievements tables successfully
+07.08 - 15:35:55 : : Created achievements tables successfully
+07.08 - 15:35:56 : : Created achievements tables successfully
+07.08 - 15:36:03 : : Created achievements tables successfully
+08.08 - 05:34:10 : : Created game_stats table successfully
+08.08 - 05:34:38 : : Created game_stats table successfully
+08.08 - 05:43:27 : : Created achievements tables successfully
+08.08 - 05:43:38 : : Created game_stats table successfully
+08.08 - 09:19:27 : : Created achievements tables successfully
+08.08 - 09:19:28 : : Created achievements tables successfully
+08.08 - 09:19:36 : : Created achievements tables successfully
+08.08 - 09:19:44 : : Created achievements tables successfully
+08.08 - 11:51:37 : : Created achievements tables successfully
+08.08 - 11:51:47 : : Created achievements tables successfully
+08.08 - 11:51:47 : : Created achievements tables successfully
+08.08 - 11:52:42 : : Created game_stats table successfully
+08.08 - 12:04:23 : : Created achievements tables successfully
+08.08 - 12:04:36 : : Created achievements tables successfully
+08.08 - 12:04:36 : Что значит это слово? 6228516316
+08.08 - 12:04:39 : : Created achievements tables successfully
+08.08 - 12:04:42 : : Created game_stats table successfully
+08.08 - 12:05:04 : : Created game_stats table successfully
+08.08 - 12:50:14 : : Created achievements tables successfully
+08.08 - 12:50:14 : : Created achievements tables successfully
+10.08 - 08:23:46 : : Created game_stats table successfully
+10.08 - 08:23:51 : : Created game_stats table successfully
+10.08 - 09:51:50 : : Created game_stats table successfully
+10.08 - 09:52:03 : : Created game_stats table successfully
+10.08 - 09:53:17 : : Created achievements tables successfully
+10.08 - 09:53:25 : : Created game_stats table successfully
+11.08 - 10:35:43 : : Created achievements tables successfully
+11.08 - 10:43:32 : : Created achievements tables successfully
+13.08 - 16:48:00 : : Created achievements tables successfully
+13.08 - 16:48:05 : : Created achievements tables successfully
+14.08 - 09:11:31 : : Created achievements tables successfully
+14.08 - 09:11:32 : !!!!!Ошибка!!!!!:Cannot connect to host topmemas.top:443 ssl:True [SSLCertVerificationError: (1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1000)')] после сообщения:/sendmem 790083431
+14.08 - 09:11:57 : : Created achievements tables successfully
+14.08 - 09:11:58 : : Created achievements tables successfully
+14.08 - 09:11:59 : !!!!!Ошибка!!!!!:Cannot connect to host topmemas.top:443 ssl:True [SSLCertVerificationError: (1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1000)')] после сообщения:/sendmem 790083431
+14.08 - 09:12:26 : : Created achievements tables successfully
+14.08 - 09:12:26 : : Created achievements tables successfully
+14.08 - 09:13:11 : : Created achievements tables successfully
+14.08 - 09:13:11 : : Created achievements tables successfully
+14.08 - 09:13:50 : : Created achievements tables successfully
+14.08 - 09:13:50 : !!!!!Ошибка!!!!!:Cannot connect to host topmemas.top:443 ssl:True [SSLCertVerificationError: (1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1000)')] после сообщения:/sendmem 339512152
+14.08 - 09:13:54 : : Created achievements tables successfully
+14.08 - 09:13:54 : : Created achievements tables successfully
+14.08 - 09:14:06 : : Created achievements tables successfully
+14.08 - 09:14:06 : : Created achievements tables successfully
+14.08 - 09:17:43 : !!!!!Ошибка!!!!!:Cannot connect to host topmemas.top:443 ssl:True [SSLCertVerificationError: (1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)')] после сообщения:/sendmem 339512152
+14.08 - 09:20:02 : : Created achievements tables successfully
+14.08 - 09:20:03 : !!!!!Ошибка!!!!!:Cannot connect to host topmemas.top:443 ssl:True [SSLCertVerificationError: (1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1000)')] после сообщения:/sendmem 339512152
+14.08 - 09:30:43 : !!!!!Ошибка!!!!!:Cannot choose from an empty sequence после сообщения:/sendmem 790083431
+14.08 - 09:52:38 : !!!!!Ошибка!!!!!:cannot access local variable 'img_links' where it is not associated with a value после сообщения:/sendmem 339512152
+14.08 - 09:54:04 : !!!!!Ошибка!!!!!:cannot access local variable 'img_links' where it is not associated with a value после сообщения:/sendmem 339512152
+14.08 - 09:54:26 : !!!!!Ошибка!!!!!:cannot access local variable 'img_links' where it is not associated with a value после сообщения:/sendmem 339512152
+14.08 - 09:56:46 : !!!!!Ошибка!!!!!:cannot access local variable 'img_links' where it is not associated with a value после сообщения:/sendmem 339512152
+14.08 - 09:57:18 : !!!!!Ошибка!!!!!:cannot access local variable 'img_links' where it is not associated with a value после сообщения:/sendmem 339512152
+14.08 - 09:58:06 : !!!!!Ошибка!!!!!:cannot access local variable 'img_links' where it is not associated with a value после сообщения:/sendmem 339512152
+14.08 - 10:00:54 : !!!!!Ошибка!!!!!:Cannot connect to host www.memify.ru:443 ssl:default [Connect call failed ('52.59.83.18', 443)] после сообщения:/sendmem 339512152
+14.08 - 10:01:35 : !!!!!Ошибка!!!!!:cannot access local variable 'img_links' where it is not associated with a value после сообщения:/sendmem 339512152
+14.08 - 10:05:46 : !!!!!Ошибка!!!!!:Wrong remote file identifier specified: wrong character in the string после сообщения:/sendmem 339512152
+14.08 - 10:08:58 : !!!!!Ошибка!!!!!:Failed to get http url content после сообщения:/sendmem 339512152
+14.08 - 10:10:17 : !!!!!Ошибка!!!!!:Can not serialize value type: <class 'list'>
+ headers: {}
+ value: ['https://www.nvcdn.memify.ru/media/kyh615bpmvG0dI97NTJ5Nw/20220815/gtzdfVpz3fk.jpg', 'https://www.nvcdn.memify.ru/media/IzYI6ndFFXzpBiZGjB_yIQ/20220815/Jum3r_zrnBk.jpg', 'https://www.nvcdn.memify.ru/media/bYgl2cSKcnf_tM8donutZA/20220814/jpmdKHTbmws.jpg', 'https://www.nvcdn.memify.ru/media/KpXmX_MwPoBqhle0iCa5gg/20220814/HUmkBPCV91c.jpg', 'https://www.nvcdn.memify.ru/media/0ZE1IzQcLCyL60KCobi1aw/20220814/rmoUDMrPVuw.jpg'] после сообщения:/sendmem 339512152
+14.08 - 10:11:41 : !!!!!Ошибка!!!!!:Can not serialize value type: <class 'list'>
+ headers: {}
+ value: ['https://www.nvcdn.memify.ru/media/kvbjghOhBSLp_CAZmj_VdA/20200720/hBZyzROZHBU.jpg', 'https://www.nvcdn.memify.ru/media/IzYI6ndFFXzpBiZGjB_yIQ/20200720/SSbhw8esvKA.jpg', 'https://www.nvcdn.memify.ru/media/IzYI6ndFFXzpBiZGjB_yIQ/20200720/94hl7g33R7Y.jpg', 'https://www.nvcdn.memify.ru/media/cn3m3jn7NhtLpESzVrW64A/20200720/nbP-nA6vgMg.jpg', 'https://www.nvcdn.memify.ru/media/IzYI6ndFFXzpBiZGjB_yIQ/20200720/kaJCruLxkmQ.jpg'] после сообщения:/sendmem 339512152
+14.08 - 10:12:57 : !!!!!Ошибка!!!!!:Can not serialize value type: <class 'list'>
+ headers: {}
+ value: ['https://www.nvcdn.memify.ru/media/rftHkYZvzFhflqzlOu8cDw/20240507/5316748279691728740.jpg', 'https://www.nvcdn.memify.ru/media/9__dtJDANcMsR7ImG0yu4A/20240507/aOoQ0xFRYuI.jpg', 'https://www.nvcdn.memify.ru/media/0ZE1IzQcLCyL60KCobi1aw/20240507/QT-XtlfBJoU.jpg', 'https://www.nvcdn.memify.ru/media/bYgl2cSKcnf_tM8donutZA/20240507/gYE-0h6GlGk.jpg', 'https://www.nvcdn.memify.ru/media/ObEJ1iq81GdtVsxovhTE7w/20240507/xAKiXiu8fa8.jpg'] после сообщения:/sendmem 339512152
+14.08 - 10:15:41 : : Created achievements tables successfully

@@ -139,7 +139,7 @@ async def help(mess: types.Message):
         await track_activity(mess.from_user.id, "command", 1, 
                            mess.chat.type in ['group', 'supergroup'], is_night)
         
-        if mess.from_user.id == 339512152:
+        if mess.from_user.id == key.admin_id:
             await mess.answer(await printlist(list_commands_adm), reply_markup=types.ReplyKeyboardRemove())
         else:
             await mess.answer(await printlist(list_commands), reply_markup=types.ReplyKeyboardRemove())
@@ -413,7 +413,7 @@ async def show_taro(mess: types.Message):
 @dp.message_handler(commands=['showusersname'])
 async def show_names(mess: types.Message):
     try:
-        if mess.from_user.id == 339512152:
+        if mess.from_user.id == key.admin_id:
             names = ''
             for user_name in await bd.get_list_users("name"):
                 names += user_name + '\n'
@@ -427,7 +427,7 @@ async def show_names(mess: types.Message):
 @dp.message_handler(commands=['sendmess'])
 async def send_mess(mess: types.Message, state: FSMContext):
     try:
-        if mess.from_user.id == 339512152:
+        if mess.from_user.id == key.admin_id:
             await bot.send_message(mess.chat.id, 'Хозяин, что вы хотите отправить всем нашим рабам?')
             await SendMessToAllUsers.text.set()
         else:
@@ -472,7 +472,7 @@ async def send_mess_to_all(mess: types.Message, state: FSMContext):
 @dp.message_handler(commands=['sendmesstouser'])
 async def send_mess_to_user(mess: types.Message, state: FSMContext):
     try:
-        if mess.from_user.id == 339512152:
+        if mess.from_user.id == key.admin_id:
             await bot.send_message(mess.chat.id, 'Напиши id')
             await SendMessToUser.user_id.set()
         else:
@@ -524,7 +524,7 @@ async def send_mess2_to_all(mess: types.Message, state: FSMContext):
 @dp.message_handler(commands=['getlog'])
 async def send_log_file(mess: types.Message):
     try:
-        if mess.from_user.id == 339512152:
+        if mess.from_user.id == key.admin_id:
             await bot.send_document(mess.chat.id, await log.get_file())
         else:
             await bot.send_message(mess.chat.id, 'Не твоего поля ягодка, дорогуша. Стань админом, а потом поговорим')
@@ -546,7 +546,7 @@ async def send_mail(mess: types.Message, state: FSMContext):
 @dp.message_handler(state=SendMessToAdmin.text, content_types=types.ContentTypes.TEXT)
 async def send_mail_to_admin(mess: types.Message, state: FSMContext):
     try:
-        await bot.send_message(339512152,
+        await bot.send_message(key.admin_id,
                          'Cообщениение Админу:\n' + str(mess.text) + '\n от: ' + str(mess.from_user.first_name) +
                          ' ' + str(mess.from_user.id))
         await bot.send_message(mess.chat.id, 'Сообщение отпралено, я тебе передам ответ (если он будет)')
@@ -564,6 +564,7 @@ async def mem(mess: types.Message):
         name = await bd.give_user_name(mess.from_user.id)
         if name == '':
             name = mess.from_user.first_name
+
         #try:
         #    await mess.answer(f"{type(await img_from_site.get_pic())}, {str(await img_from_site.get_pic())}")
         #except:
@@ -576,7 +577,10 @@ async def mem(mess: types.Message):
         else:
             await bot.send_photo(mess.chat.id, photo= await img_from_site.get_pic(), caption=f'Держи, {name}, мем')
 
+        await track_activity(mess.from_user.id, "meme")
+
     except Exception as e:
+        await bot.send_message(mess.chat.id, f'Сегодня без мемов, {name} 😭')
         await err('die', mess, e)
 
 @dp.message_handler(commands=['createmem'])
