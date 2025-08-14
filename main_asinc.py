@@ -440,7 +440,7 @@ async def send_mess(mess: types.Message, state: FSMContext):
 @dp.message_handler(state=SendMessToAllUsers.text, content_types=types.ContentTypes.TEXT)
 async def get_text_for_mess(mess: types.Message, state: FSMContext):
     try:
-        await bot.send_message(mess.chat.id, 'Хозяин, вы точно хотите это отвправить?')
+        await bot.send_message(mess.chat.id, 'Хозяин, вы точно хотите это отправить?')
         await state.update_data(text=mess.text)
         await SendMessToAllUsers.confing.set()
 

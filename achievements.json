@@ -181,6 +181,24 @@
       "stat": "games_quit",
       "enabled": true
     },
+    "noob_hooligan": {
+      "name": "Новичок хулиган",
+      "description": "1 замечание за мат",
+      "icon": "😤",
+      "category": "behavior",
+      "threshold": 1,
+      "stat": "profanity_warnings",
+      "enabled": true
+    },
+    "hooligan_0": {
+      "name": "Хулиган",
+      "description": "10 замечаний за мат",
+      "icon": "😡",
+      "category": "behavior",
+      "threshold": 10,
+      "stat": "profanity_warnings",
+      "enabled": true
+    },
     "hooligan_1": {
       "name": "Хулиган",
       "description": "50 замечаний за мат",
@@ -224,6 +242,15 @@
       "category": "behavior",
       "threshold": 10,
       "stat": "commands_used",
+      "enabled": true
+    },
+    "meme_enjoyer": {
+      "name": "Мем-любитель",
+      "description": "Запросить 1 мем",
+      "icon": "😄",
+      "category": "behavior",
+      "threshold": 1,
+      "stat": "memes_requested",
       "enabled": true
     },
     "meme_master": {
